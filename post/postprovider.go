@@ -8,27 +8,16 @@ import (
 	"regexp"
 )
 
-const POSTS_FILENAME_PATTERN string = `.*\.md`
-
 func GetSitePosts(workDir string) map[string]BlogPost {
 
-	return listPosts(workDir + "/posts")
+	return readPostsFromFolder(workDir + "/posts")
 }
 
-func listFiles(dir string) []os.FileInfo {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return files
-}
-
-func listPosts(postsDir string) map[string]BlogPost {
-	var fileNamePattern = regexp.MustCompile(POSTS_FILENAME_PATTERN)
+func readPostsFromFolder(postsDir string) map[string]BlogPost {
+	var fileNamePattern = regexp.MustCompile(`.*\.md`)
 	files := listFiles(postsDir)
 
-	var postMap map[string]BlogPost = make(map[string]BlogPost)
+	var postMap = make(map[string]BlogPost)
 
 	for _, file := range files {
 		if !fileNamePattern.MatchString(file.Name()) {
@@ -38,6 +27,15 @@ func listPosts(postsDir string) map[string]BlogPost {
 		postMap[file.Name()] = CreateBlogPost(content)
 	}
 	return postMap
+}
+
+func listFiles(dir string) []os.FileInfo {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return files
 }
 
 func readContent(dir string, fileName string) string {
@@ -50,7 +48,7 @@ func readContent(dir string, fileName string) string {
 	scanner := bufio.NewScanner(file)
 	var content string
 	for scanner.Scan() {
-		content += (scanner.Text() + "\n")
+		content += scanner.Text() + "\n"
 	}
 
 	return content
