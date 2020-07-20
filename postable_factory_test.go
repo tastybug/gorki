@@ -40,3 +40,21 @@ Lorem ipsum..
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
 	}
 }
+
+func TestContentIsExtracted(t *testing.T) {
+	var fileContent = `---
+Title:The Bible
+Description: So God said ..
+---
+# Header
+Lorem ipsum..
+`
+	result := postable.CreatePostableFromFile(fileContent)
+	exptected := `
+# Header
+Lorem ipsum..
+`
+	if result.Content != exptected {
+		t.Errorf("Content, got: %s, want: %s.", result.Content, exptected)
+	}
+}
