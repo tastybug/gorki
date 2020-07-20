@@ -28,7 +28,7 @@ func extractGroup(content string, pattern string, groupAlias string) string {
 			return result[index]
 		}
 	}
-	return ""
+	return ``
 }
 
 type Postable struct {
