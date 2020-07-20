@@ -11,7 +11,7 @@ Title:The Bible
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostableFromFile(fileContent)
+	result := postable.CreatePostable(fileContent)
 	expectedTitle := "The Bible"
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -23,7 +23,7 @@ func TestMissingTitleLeadsToEmpty(t *testing.T) {
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostableFromFile(fileContent)
+	result := postable.CreatePostable(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -34,7 +34,7 @@ func TestMissingMetadataLeadsToEmptyTitle(t *testing.T) {
 	var fileContent = `# Header
 Lorem ipsum..
 `
-	result := postable.CreatePostableFromFile(fileContent)
+	result := postable.CreatePostable(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -49,7 +49,7 @@ Description: So God said ..
 # Header
 Lorem ipsum..
 `
-	result := postable.CreatePostableFromFile(fileContent)
+	result := postable.CreatePostable(fileContent)
 	exptected := `
 # Header
 Lorem ipsum..

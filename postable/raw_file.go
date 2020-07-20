@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func listPostableFiles(dir string) []os.FileInfo {
+func listMarkdownFiles(dir string) []os.FileInfo {
 	allFiles, err := ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)

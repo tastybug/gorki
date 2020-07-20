@@ -3,12 +3,10 @@ package postable
 func CollectPostables(workDir string) map[string]Postable {
 
 	postsDir := workDir + "/posts"
-	files := listPostableFiles(postsDir)
-
 	var postableMap = make(map[string]Postable)
-	for _, file := range files {
-		content := readFileContent(postsDir, file.Name())
-		postableMap[file.Name()] = CreatePostableFromFile(content)
+
+	for _, mdFile := range listMarkdownFiles(postsDir) {
+		postableMap[mdFile.Name()] = CreatePostable(readFileContent(postsDir, mdFile.Name()))
 	}
 	return postableMap
 }

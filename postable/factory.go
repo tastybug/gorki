@@ -4,12 +4,11 @@ import (
 	"regexp"
 )
 
-func CreatePostableFromFile(rawPostableContent string) Postable {
+func CreatePostable(rawPostableContent string) (post Postable) {
 	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#]+)`
 	const titlePattern = `[t|T]itle: ?(?P<value>[\w. ]*)`
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 
-	var post Postable
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
 	post.Content = extractGroup(rawPostableContent, structurePattern, `content`)
 	post.Title = extractGroup(metadata, titlePattern, `value`)
