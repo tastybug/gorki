@@ -1,4 +1,4 @@
-package post
+package content
 
 import (
 	"bufio"
@@ -8,7 +8,7 @@ import (
 	"regexp"
 )
 
-func GetPostables(workDir string) map[string]Postable {
+func CollectPostables(workDir string) map[string]Postable {
 
 	return collectPostables(workDir + "/posts")
 }
