@@ -8,28 +8,28 @@ import (
 	"regexp"
 )
 
-func GetSitePosts(workDir string) map[string]BlogPost {
+func GetPostables(workDir string) map[string]Postable {
 
-	return readPostsFromFolder(workDir + "/posts")
+	return collectPostables(workDir + "/posts")
 }
 
-func readPostsFromFolder(postsDir string) map[string]BlogPost {
+func collectPostables(postsDir string) map[string]Postable {
 	var fileNamePattern = regexp.MustCompile(`.*\.md`)
-	files := listFiles(postsDir)
+	files := listPostableFiles(postsDir)
 
-	var postMap = make(map[string]BlogPost)
+	var postMap = make(map[string]Postable)
 
 	for _, file := range files {
 		if !fileNamePattern.MatchString(file.Name()) {
 			continue
 		}
-		content := readContent(postsDir, file.Name())
-		postMap[file.Name()] = CreateBlogPost(content)
+		content := readFileContent(postsDir, file.Name())
+		postMap[file.Name()] = CreatePostableFromFile(content)
 	}
 	return postMap
 }
 
-func listFiles(dir string) []os.FileInfo {
+func listPostableFiles(dir string) []os.FileInfo {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
@@ -38,7 +38,7 @@ func listFiles(dir string) []os.FileInfo {
 	return files
 }
 
-func readContent(dir string, fileName string) string {
+func readFileContent(dir string, fileName string) string {
 	file, err := os.Open(dir + "/" + fileName)
 	if err != nil {
 		log.Fatal(err)

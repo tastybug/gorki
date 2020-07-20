@@ -5,11 +5,11 @@ import (
 	"regexp"
 )
 
-func CreateBlogPost(rawContent string) BlogPost {
+func CreatePostableFromFile(rawContent string) Postable {
 
 	metadata := extractPattern(rawContent, `-{3}(?P<value>[\s\w:.]+)-{3}`)
 
-	var post BlogPost
+	var post Postable
 	post.Title = extractPattern(metadata, `[t|T]itle: ?(?P<value>[\w. ]*)`)
 	post.Description = extractPattern(metadata, `[d|D]escription: ?(?P<value>[\w. ]*)`)
 	post.Content = extractPattern(rawContent, `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<value>[\s\w:.#]+)`)
@@ -31,7 +31,7 @@ func extractPattern(content string, pattern string) string {
 	return ""
 }
 
-type BlogPost struct {
+type Postable struct {
 	Title       string
 	Description string
 	Content     string
