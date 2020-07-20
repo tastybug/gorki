@@ -1,4 +1,4 @@
-package content
+package postable
 
 import (
 	"bufio"

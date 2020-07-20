@@ -1,7 +1,6 @@
-package content
+package postable
 
 import (
-	"log"
 	"regexp"
 )
 
@@ -24,7 +23,6 @@ func extractPattern(content string, pattern string) string {
 
 	for index, value := range r.SubexpNames() {
 		if value == "value" && len(result) >= index {
-			log.Printf("For '%s' I found '%s'", pattern, result[index])
 			return result[index]
 		}
 	}
