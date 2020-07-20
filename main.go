@@ -5,14 +5,13 @@ import (
 	"fmt"
 )
 
-const WORK_DIR string = "."
+const WORK_DIR string = "testdata"
 
 func main() {
-	const TITLE_REGEX string = "^.$"
-	var posts []post.BlogPost = post.GetSitePosts(WORK_DIR)
+	var posts map[string]post.BlogPost = post.GetSitePosts(WORK_DIR)
 
-	for index, elem := range posts {
-		fmt.Printf("%d, %s\n", index, elem.Title)
+	for key, elem := range posts {
+		fmt.Printf("%+v (file name %s)\n", elem, key)
 	}
 
 }
