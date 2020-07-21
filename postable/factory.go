@@ -10,11 +10,11 @@ func CreatePostable(rawPostableContent string) (post Postable) {
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
-	post.Content = extractGroup(rawPostableContent, structurePattern, `content`)
-	post.Title = extractGroup(metadata, titlePattern, `value`)
-	post.Description = extractGroup(metadata, descriptionPattern, `value`)
-
-	return post
+	return Postable{
+		Title:       extractGroup(metadata, titlePattern, `value`),
+		Description: extractGroup(metadata, descriptionPattern, `value`),
+		Content:     extractGroup(rawPostableContent, structurePattern, `content`),
+	}
 }
 
 func extractGroup(content string, pattern string, groupAlias string) string {
