@@ -5,6 +5,7 @@ import (
 	. "io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,7 +20,7 @@ func listMarkdownFiles(dir string) []os.FileInfo {
 }
 
 func readFileContent(dir string, fileName string) string {
-	file, err := os.Open(dir + "/" + fileName)
+	file, err := os.Open(filepath.Join(dir, fileName))
 	if err != nil {
 		log.Fatal(err)
 	}

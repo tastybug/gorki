@@ -1,8 +1,10 @@
 package postable
 
+import "path/filepath"
+
 func CollectPostables(workDir string) map[string]Postable {
 
-	postsDir := workDir + "/posts"
+	postsDir := filepath.Join(workDir, "posts")
 	var postableMap = make(map[string]Postable)
 
 	for _, mdFile := range listMarkdownFiles(postsDir) {
