@@ -1,6 +1,7 @@
 package postable
 
 import (
+	"bloggo/util"
 	"bufio"
 	. "io/ioutil"
 	"log"
@@ -11,9 +12,7 @@ import (
 
 func listMarkdownFiles(dir string) []os.FileInfo {
 	allFiles, err := ReadDir(dir)
-	if err != nil {
-		log.Fatal(err)
-	}
+	util.PanicOnError(err)
 
 	onlyMarkdown := func(file os.FileInfo) bool { return strings.HasSuffix(file.Name(), ".md") }
 	return filter(allFiles, onlyMarkdown)
