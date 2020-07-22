@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bloggo/postable"
 	"testing"
 )
 
@@ -11,7 +10,7 @@ Title:The Bible
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostableFromRawString(fileContent)
+	result := CreatePostableFromRawString(fileContent)
 	expectedTitle := "The Bible"
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -23,7 +22,7 @@ func TestMissingTitleLeadsToEmpty(t *testing.T) {
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostableFromRawString(fileContent)
+	result := CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -34,7 +33,7 @@ func TestMissingMetadataLeadsToEmptyTitle(t *testing.T) {
 	var fileContent = `# Header
 Lorem ipsum..
 `
-	result := postable.CreatePostableFromRawString(fileContent)
+	result := CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -49,7 +48,7 @@ Description: So God said ..
 # Header
 Lorem ipsum..
 `
-	result := postable.CreatePostableFromRawString(fileContent)
+	result := CreatePostableFromRawString(fileContent)
 	exptected := `
 # Header
 Lorem ipsum..

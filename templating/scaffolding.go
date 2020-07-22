@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-func CreateMainPages(workDir string) {
+func PublishOtherPages(workDir string) {
 
 	writeMainPage(
 		workDir,

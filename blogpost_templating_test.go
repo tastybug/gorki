@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bloggo/postable"
 	"bloggo/templating"
 	"testing"
 )
@@ -9,14 +8,14 @@ import (
 func TestBla(t *testing.T) {
 
 	// given
-	postable := postable.Postable{
+	postable := Postable{
 		Title:       `The Bible`,
 		Description: `God said that..`,
 		ContentAsMd: `# Header\nLorem Ipsum..`,
 	}
 
 	// when
-	result := templating.CreateBlogPostPage(postable, `testdata/templates`)
+	result := templating.PublishPost(postable, `testdata/templates`)
 
 	// then
 	expectedHtmlContent := `<html>

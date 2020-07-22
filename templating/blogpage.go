@@ -1,7 +1,7 @@
 package templating
 
 import (
-	"bloggo/postable"
+	"bloggo"
 	"bloggo/util"
 	"bytes"
 	"html/template"
@@ -11,10 +11,10 @@ import (
 
 type Page struct {
 	HtmlContent string
-	Postable    postable.Postable
+	Postable    main.Postable
 }
 
-func CreateBlogPostPage(postable postable.Postable, templatesFolder string) Page {
+func PublishPost(postable main.Postable, templatesFolder string) Page {
 
 	var b bytes.Buffer
 

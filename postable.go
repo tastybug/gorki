@@ -1,9 +1,22 @@
-package postable
+package main
 
 import (
+	"bloggo/util"
 	"github.com/gomarkdown/markdown"
+	"path/filepath"
 	"regexp"
 )
+
+func CollectPostables(workDir string) map[string]Postable {
+
+	postsDir := filepath.Join(workDir, "posts")
+	var postableMap = make(map[string]Postable)
+
+	for _, mdFile := range util.ListFilesWithSuffix(postsDir, ".md") {
+		postableMap[mdFile.Name()] = CreatePostableFromRawString(util.ReadFileContent(postsDir, mdFile.Name()))
+	}
+	return postableMap
+}
 
 func CreatePostableFromRawString(rawPostableContent string) (post Postable) {
 	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#]+)`
