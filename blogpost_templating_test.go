@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bloggo/templating"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func TestBla(t *testing.T) {
 	}
 
 	// when
-	result := templating.PublishPost(postable, `testdata/templates`)
+	result := PublishPost(postable, `testdata/templates`)
 
 	// then
 	expectedHtmlContent := `<html>

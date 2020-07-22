@@ -1,7 +1,6 @@
-package templating
+package main
 
 import (
-	"bloggo"
 	"bloggo/util"
 	"bytes"
 	"html/template"
@@ -11,10 +10,10 @@ import (
 
 type Page struct {
 	HtmlContent string
-	Postable    main.Postable
+	Postable    Postable
 }
 
-func PublishPost(postable main.Postable, templatesFolder string) Page {
+func PublishPost(postable Postable, templatesFolder string) Page {
 
 	var b bytes.Buffer
 
@@ -35,5 +34,4 @@ func PublishPost(postable main.Postable, templatesFolder string) Page {
 
 func createContentTemplate(content string) *os.File {
 	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
-
 }

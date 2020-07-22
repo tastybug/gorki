@@ -1,4 +1,4 @@
-package templating
+package main
 
 import (
 	"bloggo/util"
@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 )
 
-func PublishOtherPages(workDir string) {
+func PublishOtherPages(workDir, targetDir string) {
 
 	writeMainPage(
-		workDir,
+		targetDir,
 		[]string{
 			filepath.Join(workDir, `templates/about`, "_about.html"),
 			filepath.Join(workDir, `templates`, "footer.html"),
@@ -23,7 +23,7 @@ func PublishOtherPages(workDir string) {
 		},
 		"about.html")
 	writeMainPage(
-		workDir,
+		targetDir,
 		[]string{
 			filepath.Join(workDir, `templates/index`, "_index.html"),
 			filepath.Join(workDir, `templates`, "footer.html"),
@@ -32,16 +32,16 @@ func PublishOtherPages(workDir string) {
 		},
 		"index.html")
 
-	copyAssets(workDir)
+	copyAssets(workDir, targetDir)
 }
 
-func writeMainPage(workDir string, paths []string, mainFileName string) {
+func writeMainPage(targetDir string, paths []string, mainFileName string) {
 	tmpl := template.Must(template.ParseFiles(paths...))
 
 	var b bytes.Buffer
 	tmpl.Execute(&b, nil)
 
-	f, err := os.Create(filepath.Join(workDir, "target", mainFileName))
+	f, err := os.Create(filepath.Join(targetDir, mainFileName))
 	util.PanicOnError(err)
 	defer f.Close()
 	fileWriter := bufio.NewWriter(f)
@@ -50,9 +50,8 @@ func writeMainPage(workDir string, paths []string, mainFileName string) {
 	util.PanicOnError(err)
 }
 
-func copyAssets(workDir string) {
+func copyAssets(workDir, targetDir string) {
 	assetFolder := filepath.Join(workDir, `templates`, `assets`)
-	targetFolder := filepath.Join(workDir, `target`)
 
 	allFiles, err := ioutil.ReadDir(assetFolder)
 	util.PanicOnError(err)
@@ -60,7 +59,7 @@ func copyAssets(workDir string) {
 	for _, fileInfo := range allFiles {
 		copyFile(
 			filepath.Join(assetFolder, fileInfo.Name()),
-			filepath.Join(targetFolder, fileInfo.Name()),
+			filepath.Join(targetDir, fileInfo.Name()),
 		)
 	}
 }

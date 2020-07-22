@@ -1,4 +1,4 @@
-package templating
+package main
 
 import (
 	"bloggo/util"
@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-func WritePage(workDir string, page Page) {
-	f, err := os.Create(filepath.Join(workDir, `target`, getSafeFileName(page)))
+func WritePage(targetDir string, page Page) {
+	f, err := os.Create(filepath.Join(targetDir, getSafeFileName(page)))
 	util.PanicOnError(err)
 	defer f.Close()
 	fileWriter := bufio.NewWriter(f)

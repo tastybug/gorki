@@ -97,4 +97,4 @@ fabric.properties
 .idea/vcs.xml
 bloggo
 
-testdata/target
+target
