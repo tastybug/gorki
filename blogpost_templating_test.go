@@ -12,7 +12,7 @@ func TestBla(t *testing.T) {
 	postable := postable.Postable{
 		Title:       `The Bible`,
 		Description: `God said that..`,
-		Content:     `# Header\nLorem Ipsum..`,
+		ContentAsMd: `# Header\nLorem Ipsum..`,
 	}
 
 	// when

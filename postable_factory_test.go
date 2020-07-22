@@ -11,7 +11,7 @@ Title:The Bible
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostable(fileContent)
+	result := postable.CreatePostableFromRawString(fileContent)
 	expectedTitle := "The Bible"
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -23,7 +23,7 @@ func TestMissingTitleLeadsToEmpty(t *testing.T) {
 Description: So God said ..
 ---
 `
-	result := postable.CreatePostable(fileContent)
+	result := postable.CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -34,7 +34,7 @@ func TestMissingMetadataLeadsToEmptyTitle(t *testing.T) {
 	var fileContent = `# Header
 Lorem ipsum..
 `
-	result := postable.CreatePostable(fileContent)
+	result := postable.CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -49,12 +49,12 @@ Description: So God said ..
 # Header
 Lorem ipsum..
 `
-	result := postable.CreatePostable(fileContent)
+	result := postable.CreatePostableFromRawString(fileContent)
 	exptected := `
 # Header
 Lorem ipsum..
 `
-	if result.Content != exptected {
-		t.Errorf("Content, got: %s, want: %s.", result.Content, exptected)
+	if result.ContentAsMd != exptected {
+		t.Errorf("ContentAsMd, got: %s, want: %s.", result.ContentAsMd, exptected)
 	}
 }

@@ -3,6 +3,6 @@ Title:The Bible
 Description: So God said ..
 ---
 
-# Bla
+# The Bible
 
-Lorem ipsum...
+So according to God, you are supposed to ..

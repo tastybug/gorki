@@ -1,8 +1,19 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>{{.Title}}</title>
-    </head>
-    <body>
-    {{.Content}}
-    </body>
+
+<head>
+    {{template "head"}}
+</head>
+
+<body>
+
+    {{template "navigation"}}
+
+    <main>
+        {{template "content"}}
+    </main>
+
+    {{template "footer"}}
+
+</body>
 </html>

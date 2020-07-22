@@ -3,6 +3,6 @@ Title: The Hobbit
 Description: JRR Tolkiens classic tale of a Hobbit and his journey.
 ---
 
-# Bla
+# The Hobbit
 
-Lorem ipsum...
+There once was a Hobbit called Bilbo Baggins..
