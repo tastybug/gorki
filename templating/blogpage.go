@@ -3,10 +3,8 @@ package templating
 import (
 	"bloggo/postable"
 	"bloggo/util"
-	"bufio"
 	"bytes"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -36,14 +34,6 @@ func CreateBlogPostPage(postable postable.Postable, templatesFolder string) Page
 }
 
 func createContentTemplate(content string) *os.File {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "tmp-template-")
-	util.PanicOnError(err)
+	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
 
-	fileWriter := bufio.NewWriter(tmpFile)
-	_, err = fileWriter.Write([]byte("{{define \"content\"}}" + content + "{{end}}"))
-	util.PanicOnError(err)
-	err = fileWriter.Flush()
-	util.PanicOnError(err)
-
-	return tmpFile
 }
