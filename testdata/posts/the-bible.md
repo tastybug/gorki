@@ -5,4 +5,6 @@ Description: So God said ..
 
 # The Bible
 
-So according to God, you are supposed to ..
+Be a good boy!
+
+![God](the-bible/Hand-of-God.jpg)

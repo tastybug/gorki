@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"github.com/gomarkdown/markdown"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -12,27 +13,29 @@ import (
 )
 
 type Postable struct {
+	fileName      string
 	Title         string
 	Description   string
 	ContentAsMd   string
 	ContentAsHtml string
+	assets        []Asset
 }
 
 func CollectArticlePages(workDir, templatesFolder string) map[string]WritableContent {
+	postsDir := filepath.Join(workDir, "posts")
 	var resultMap = make(map[string]WritableContent)
-	for _, postable := range collectPostables(workDir) {
+	for _, postable := range collectPostables(postsDir) {
 		resultMap[postable.Title] = toWritableContent(postable, templatesFolder)
+		collectAssetsForArticle(postsDir, postable)
 	}
 	return resultMap
 }
 
-func collectPostables(workDir string) map[string]Postable {
-
-	postsDir := filepath.Join(workDir, "posts")
+func collectPostables(postsDir string) map[string]Postable {
 	var postableMap = make(map[string]Postable)
 
 	for _, mdFile := range util.ListFilesWithSuffix(postsDir, ".md") {
-		postableMap[mdFile.Name()] = CreatePostableFromRawString(util.ReadFileContent(postsDir, mdFile.Name()))
+		postableMap[mdFile.Name()] = AssemblePostable(mdFile.Name(), util.ReadFileContent(postsDir, mdFile.Name()))
 	}
 	return postableMap
 }
@@ -63,7 +66,16 @@ func getSafeFileName(postable Postable) string {
 	return strings.ReplaceAll(postable.Title, " ", "-") + ".html"
 }
 
-func CreatePostableFromRawString(rawPostableContent string) (post Postable) {
+func collectAssetsForArticle(postsDir string, postable Postable) {
+	assetFolderName := extractGroup(postable.fileName, `(?P<name>.*).md`, `name`)
+	assetFolderPath := filepath.Join(postsDir, assetFolderName)
+	if util.Exists(assetFolderPath) {
+		log.Println("Found assets for " + postable.Title)
+	}
+
+}
+
+func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#]+)`
 	const titlePattern = `[t|T]itle: ?(?P<value>[\w. ]*)`
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
@@ -71,6 +83,7 @@ func CreatePostableFromRawString(rawPostableContent string) (post Postable) {
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
 	mdContent := extractGroup(rawPostableContent, structurePattern, `content`)
 	return Postable{
+		fileName:      fileName,
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),
 		ContentAsMd:   mdContent,
