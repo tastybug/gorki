@@ -3,6 +3,7 @@ package pages
 import (
 	"bloggo/util"
 	"bufio"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -37,6 +38,7 @@ func WriteContent(targetDir string, page WritableContent) {
 }
 
 func WriteAsset(targetDir string, asset Asset) {
+	log.Printf("Writing asset %s\n", asset.CopyFromPath)
 	var targetPath string
 	if asset.Context != `` {
 		targetPath = filepath.Join(targetDir, asset.Context, asset.Filename)

@@ -1,7 +1,8 @@
 - Docker support
++ Local web server for development
 - CI
 - Document expected structure of a site, format of posts
-- Generate a "Blog Post as HTML"
++ Generate a "Blog Post as HTML"
 - Generate a "Blog Posts Overview Page"
 - Generate a "Blog Posts Archive Page"
 - Generate a "Tags Page"

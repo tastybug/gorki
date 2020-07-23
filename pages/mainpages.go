@@ -12,7 +12,7 @@ func CollectMainPages(templatesDir string) []WritableContent {
 	return []WritableContent{
 		assemblePage(
 			[]string{
-				filepath.Join(templatesDir, `about`, "_about.html"),
+				filepath.Join(templatesDir, "_about.html"),
 				filepath.Join(templatesDir, "footer.html"),
 				filepath.Join(templatesDir, "navigation.html"),
 				filepath.Join(templatesDir, "head.html"),
@@ -20,7 +20,7 @@ func CollectMainPages(templatesDir string) []WritableContent {
 			"about.html"),
 		assemblePage(
 			[]string{
-				filepath.Join(templatesDir, `index`, "_index.html"),
+				filepath.Join(templatesDir, "_index.html"),
 				filepath.Join(templatesDir, "footer.html"),
 				filepath.Join(templatesDir, "navigation.html"),
 				filepath.Join(templatesDir, "head.html"),
@@ -36,7 +36,7 @@ func assemblePage(paths []string, fileName string) WritableContent {
 	return WritableContent{HtmlContent: b.String(), Path: fileName}
 }
 
-func CollectAssets(workDir, targetDir string) map[string]Asset {
+func CollectAssets(workDir string) map[string]Asset {
 	assetFolder := filepath.Join(workDir, `templates`, `assets`)
 
 	allFiles, err := ioutil.ReadDir(assetFolder)
