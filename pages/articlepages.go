@@ -13,20 +13,19 @@ import (
 )
 
 type Postable struct {
-	fileName      string
-	Title         string
-	Description   string
+	canonicalName string // some-blogpost
+	fileName      string // some-blogpost.md
+	Title         string // From metadata
+	Description   string // From metadata
 	ContentAsMd   string
 	ContentAsHtml string
-	assets        []Asset
 }
 
 func CollectArticlePages(workDir, templatesFolder string) map[string]WritableContent {
 	postsDir := filepath.Join(workDir, "posts")
 	var resultMap = make(map[string]WritableContent)
 	for _, postable := range collectPostables(postsDir) {
-		resultMap[postable.Title] = toWritableContent(postable, templatesFolder)
-		collectAssetsForArticle(postsDir, postable)
+		resultMap[postable.Title] = toWritableContent(postable, postsDir, templatesFolder)
 	}
 	return resultMap
 }
@@ -40,7 +39,7 @@ func collectPostables(postsDir string) map[string]Postable {
 	return postableMap
 }
 
-func toWritableContent(postable Postable, templatesFolder string) WritableContent {
+func toWritableContent(postable Postable, postsDir string, templatesFolder string) WritableContent {
 	var b bytes.Buffer
 
 	contentTemplate := createContentTemplate(postable.ContentAsHtml)
@@ -55,7 +54,11 @@ func toWritableContent(postable Postable, templatesFolder string) WritableConten
 
 	defer os.Remove(contentTemplate.Name())
 
-	return WritableContent{HtmlContent: b.String(), Path: getSafeFileName(postable)}
+	return WritableContent{
+		HtmlContent: b.String(),
+		Path:        getSafeFileName(postable),
+		assets:      collectAssetsForArticle(postsDir, postable),
+	}
 }
 
 func createContentTemplate(content string) *os.File {
@@ -66,23 +69,35 @@ func getSafeFileName(postable Postable) string {
 	return strings.ReplaceAll(postable.Title, " ", "-") + ".html"
 }
 
-func collectAssetsForArticle(postsDir string, postable Postable) {
-	assetFolderName := extractGroup(postable.fileName, `(?P<name>.*).md`, `name`)
-	assetFolderPath := filepath.Join(postsDir, assetFolderName)
+func collectAssetsForArticle(postsDir string, postable Postable) map[string]Asset {
+	baseName := extractGroup(postable.fileName, `(?P<name>.*).md`, `name`)
+	assetFolderPath := filepath.Join(postsDir, baseName)
+	var assets = make(map[string]Asset)
 	if util.Exists(assetFolderPath) {
 		log.Println("Found assets for " + postable.Title)
+		for _, assetFile := range util.ListFilesWithSuffix(assetFolderPath, ``) {
+			assets[assetFile.Name()] = Asset{
+				Context:      baseName,
+				Filename:     assetFile.Name(),
+				CopyFromPath: filepath.Join(assetFolderPath, assetFile.Name())}
+		}
 	}
-
+	if len(assets) > 0 {
+		return assets
+	} else {
+		return nil
+	}
 }
 
 func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
-	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#]+)`
+	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#,\-!\[\]\(\)\/]+)`
 	const titlePattern = `[t|T]itle: ?(?P<value>[\w. ]*)`
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
 	mdContent := extractGroup(rawPostableContent, structurePattern, `content`)
 	return Postable{
+		canonicalName: filepath.Join(extractGroup(fileName, `(?P<name>.*).md`, `name`)),
 		fileName:      fileName,
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),

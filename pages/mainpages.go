@@ -45,8 +45,8 @@ func CollectAssets(workDir, targetDir string) map[string]Asset {
 	var resultMap = make(map[string]Asset)
 	for _, fileInfo := range allFiles {
 		resultMap[fileInfo.Name()] = Asset{
-			SourcePath: filepath.Join(assetFolder, fileInfo.Name()),
-			TargetPath: filepath.Join(targetDir, fileInfo.Name())}
+			Filename:     fileInfo.Name(),
+			CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())}
 	}
 	return resultMap
 }

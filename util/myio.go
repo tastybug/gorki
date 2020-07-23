@@ -27,8 +27,8 @@ func ListFilesWithSuffix(dir, suffix string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
 
-	onlyMarkdown := func(file os.FileInfo) bool { return strings.HasSuffix(file.Name(), suffix) }
-	return filter(allFiles, onlyMarkdown)
+	onlyWithSuffix := func(file os.FileInfo) bool { return strings.HasSuffix(file.Name(), suffix) }
+	return filter(allFiles, onlyWithSuffix)
 }
 
 func ReadFileContent(dir string, fileName string) string {

@@ -25,7 +25,7 @@ func main() {
 	}
 
 	for _, asset := range pages.CollectAssets(workDir, targetDir) {
-		fmt.Printf("Writing asset %s\n", asset.TargetPath)
-		pages.WriteAsset(asset)
+		fmt.Printf("Writing asset %s\n", asset.CopyFromPath)
+		pages.WriteAsset(targetDir, asset)
 	}
 }

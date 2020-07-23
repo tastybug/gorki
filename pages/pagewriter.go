@@ -8,13 +8,15 @@ import (
 )
 
 type WritableContent struct {
-	HtmlContent string
 	Path        string // can be a file name or subpath in target
+	HtmlContent string
+	assets      map[string]Asset
 }
 
 type Asset struct {
-	SourcePath string
-	TargetPath string
+	Filename     string
+	Context      string
+	CopyFromPath string
 }
 
 func WriteContent(targetDir string, page WritableContent) {
@@ -26,8 +28,22 @@ func WriteContent(targetDir string, page WritableContent) {
 	util.PanicOnError(err)
 	err = fileWriter.Flush()
 	util.PanicOnError(err)
+
+	if page.assets != nil {
+		for _, asset := range page.assets {
+			WriteAsset(targetDir, asset)
+		}
+	}
 }
 
-func WriteAsset(asset Asset) {
-	util.CopyFile(asset.SourcePath, asset.TargetPath)
+func WriteAsset(targetDir string, asset Asset) {
+	var targetPath string
+	if asset.Context != `` {
+		targetPath = filepath.Join(targetDir, asset.Context, asset.Filename)
+		err := os.Mkdir(filepath.Join(targetDir, asset.Context), 0740)
+		util.PanicOnError(err)
+	} else {
+		targetPath = filepath.Join(targetDir, asset.Filename)
+	}
+	util.CopyFile(asset.CopyFromPath, targetPath)
 }
