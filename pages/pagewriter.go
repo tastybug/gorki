@@ -20,18 +20,18 @@ type Asset struct {
 	CopyFromPath string
 }
 
-func WriteContent(targetDir string, page WritableContent) {
-	f, err := os.Create(filepath.Join(targetDir, page.Path))
+func WriteContent(targetDir string, writable WritableContent) {
+	f, err := os.Create(filepath.Join(targetDir, writable.Path))
 	util.PanicOnError(err)
 	defer f.Close()
 	fileWriter := bufio.NewWriter(f)
-	_, err = fileWriter.Write([]byte(page.HtmlContent))
+	_, err = fileWriter.Write([]byte(writable.HtmlContent))
 	util.PanicOnError(err)
 	err = fileWriter.Flush()
 	util.PanicOnError(err)
 
-	if page.assets != nil {
-		for _, asset := range page.assets {
+	if writable.assets != nil {
+		for _, asset := range writable.assets {
 			writeAsset(targetDir, asset)
 		}
 	}

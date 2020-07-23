@@ -15,7 +15,6 @@ import (
 type Postable struct {
 	CanonicalName string // Some-Blogpost
 	SrcFileName   string // Some-Blogpost.md
-	TargetPath    string
 	Title         string // From metadata
 	Description   string // From metadata
 	ContentAsMd   string
@@ -75,7 +74,7 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 
 	return WritableContent{
 		HtmlContent: htmlString.String(),
-		Path:        postable.TargetPath,
+		Path:        "/" + postable.CanonicalName + ".html",
 		assets:      collectAssetsForArticle(postsDir, postable),
 	}
 }
@@ -119,7 +118,6 @@ func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 	return Postable{
 		CanonicalName: canonicalName,
 		SrcFileName:   fileName,
-		TargetPath:    `/` + getSafeFileName(canonicalName),
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),
 		ContentAsMd:   mdContent,
