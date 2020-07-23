@@ -6,6 +6,8 @@ Open tasks are tracked in the [Todo File](./todo.diff).
 ### Site Notes
 
 * Fav Icon from https://favicon.io/favicon-generator/, Background Color `#209CEE`, Font `Basic, 110`, Background `Rounded`.
+* [Google PageSpeed](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fsleepy-easley-16d3e7.netlify.app/index.html)
+* [Writ CSS Reference Sheet](https://writ.cmcenroe.me/reference.html)
 
 ### Building, Running
 
