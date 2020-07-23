@@ -1,21 +1,21 @@
 package main
 
 import (
-	"bloggo/proc"
+	"bloggo/pages"
 	"testing"
 )
 
 func TestBla(t *testing.T) {
 
 	// given
-	postable := proc.Postable{
+	postable := pages.Postable{
 		Title:       `The Bible`,
 		Description: `God said that..`,
 		ContentAsMd: `# Header\nLorem Ipsum..`,
 	}
 
 	// when
-	result := proc.ToWritableContent(postable, `testdata/templates`)
+	result := pages.ToWritableContent(postable, `testdata/templates`)
 
 	// then
 	expectedHtmlContent := `<html>

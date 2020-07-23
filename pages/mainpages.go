@@ -1,4 +1,4 @@
-package proc
+package pages
 
 import (
 	"bloggo/util"
@@ -8,12 +8,7 @@ import (
 	"path/filepath"
 )
 
-type Asset struct {
-	SourcePath string
-	TargetPath string
-}
-
-func CollectOtherContent(templatesDir string) []WritableContent {
+func CollectMainPages(templatesDir string) []WritableContent {
 	return []WritableContent{
 		assemblePage(
 			[]string{

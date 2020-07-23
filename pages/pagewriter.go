@@ -1,4 +1,4 @@
-package proc
+package pages
 
 import (
 	"bloggo/util"
@@ -6,6 +6,16 @@ import (
 	"os"
 	"path/filepath"
 )
+
+type WritableContent struct {
+	HtmlContent string
+	Path        string // can be a file name or subpath in target
+}
+
+type Asset struct {
+	SourcePath string
+	TargetPath string
+}
 
 func WriteContent(targetDir string, page WritableContent) {
 	f, err := os.Create(filepath.Join(targetDir, page.Path))

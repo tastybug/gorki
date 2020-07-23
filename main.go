@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bloggo/proc"
+	"bloggo/pages"
 	"bloggo/util"
 	"fmt"
 	"path/filepath"
@@ -14,18 +14,18 @@ func main() {
 	util.PrepareTargetFolder(targetDir)
 	templatesFolder := filepath.Join(workDir, `templates`)
 
-	for _, postable := range proc.CollectPostables(workDir) {
-		writable := proc.ToWritableContent(postable, templatesFolder)
-		fmt.Printf("Writing %s\n", writable.Path)
-		proc.WriteContent(targetDir, writable)
+	for _, article := range pages.CollectArticlePages(workDir, templatesFolder) {
+		fmt.Printf("Writing article %s\n", article.Path)
+		pages.WriteContent(targetDir, article)
 	}
 
-	for _, writable := range proc.CollectOtherContent(templatesFolder) {
-		fmt.Printf("Writing %s\n", writable.Path)
-		proc.WriteContent(targetDir, writable)
+	for _, mainPage := range pages.CollectMainPages(templatesFolder) {
+		fmt.Printf("Writing main page %s\n", mainPage.Path)
+		pages.WriteContent(targetDir, mainPage)
 	}
-	for _, asset := range proc.CollectAssets(workDir, targetDir) {
-		fmt.Printf("Writing %s\n", asset.TargetPath)
-		proc.WriteAsset(asset)
+
+	for _, asset := range pages.CollectAssets(workDir, targetDir) {
+		fmt.Printf("Writing asset %s\n", asset.TargetPath)
+		pages.WriteAsset(asset)
 	}
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bloggo/proc"
+	"bloggo/pages"
 	"testing"
 )
 
@@ -11,7 +11,7 @@ Title:The Bible
 Description: So God said ..
 ---
 `
-	result := proc.CreatePostableFromRawString(fileContent)
+	result := pages.CreatePostableFromRawString(fileContent)
 	expectedTitle := "The Bible"
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -23,7 +23,7 @@ func TestMissingTitleLeadsToEmpty(t *testing.T) {
 Description: So God said ..
 ---
 `
-	result := proc.CreatePostableFromRawString(fileContent)
+	result := pages.CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -34,7 +34,7 @@ func TestMissingMetadataLeadsToEmptyTitle(t *testing.T) {
 	var fileContent = `# Header
 Lorem ipsum..
 `
-	result := proc.CreatePostableFromRawString(fileContent)
+	result := pages.CreatePostableFromRawString(fileContent)
 	expectedTitle := ""
 	if result.Title != expectedTitle {
 		t.Errorf("Title, got: %s, want: %s.", result.Title, expectedTitle)
@@ -49,7 +49,7 @@ Description: So God said ..
 # Header
 Lorem ipsum..
 `
-	result := proc.CreatePostableFromRawString(fileContent)
+	result := pages.CreatePostableFromRawString(fileContent)
 	exptected := `
 # Header
 Lorem ipsum..
