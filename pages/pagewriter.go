@@ -11,7 +11,7 @@ import (
 type WritableContent struct {
 	Path        string // can be a file name or subpath in target
 	HtmlContent string
-	assets      map[string]Asset
+	assets      []Asset
 }
 
 type Asset struct {

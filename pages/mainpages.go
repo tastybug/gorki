@@ -40,17 +40,15 @@ func assemblePage(paths []string, fileName string, workFolder string) WritableCo
 	return WritableContent{HtmlContent: buffer.String(), Path: fileName, assets: collectAssets(workFolder)}
 }
 
-func collectAssets(siteDir string) map[string]Asset {
+func collectAssets(siteDir string) []Asset {
 	assetFolder := filepath.Join(siteDir, `templates`, `assets`)
 
 	allFiles, err := ioutil.ReadDir(assetFolder)
 	util.PanicOnError(err)
 
-	var resultMap = make(map[string]Asset)
+	var resultMap []Asset
 	for _, fileInfo := range allFiles {
-		resultMap[fileInfo.Name()] = Asset{
-			Filename:     fileInfo.Name(),
-			CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())}
+		resultMap = append(resultMap, Asset{Filename: fileInfo.Name(), CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())})
 	}
 	return resultMap
 }
