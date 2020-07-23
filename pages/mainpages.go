@@ -8,35 +8,38 @@ import (
 	"path/filepath"
 )
 
-func CollectMainPages(templatesDir string) []WritableContent {
+func CollectMainPages(workDir string) []WritableContent {
+	templatesDir := filepath.Join(workDir, `templates`)
 	return []WritableContent{
 		assemblePage(
 			[]string{
-				filepath.Join(templatesDir, "_about.html"),
+				filepath.Join(templatesDir, "about.html"),
 				filepath.Join(templatesDir, "footer.html"),
 				filepath.Join(templatesDir, "navigation.html"),
 				filepath.Join(templatesDir, "head.html"),
 			},
-			"about.html"),
+			"about.html",
+			workDir),
 		assemblePage(
 			[]string{
-				filepath.Join(templatesDir, "_index.html"),
+				filepath.Join(templatesDir, "index.html"),
 				filepath.Join(templatesDir, "footer.html"),
 				filepath.Join(templatesDir, "navigation.html"),
 				filepath.Join(templatesDir, "head.html"),
 			},
-			"index.html"),
+			"index.html",
+			workDir),
 	}
 }
 
-func assemblePage(paths []string, fileName string) WritableContent {
+func assemblePage(paths []string, fileName string, workFolder string) WritableContent {
 	tmpl := template.Must(template.ParseFiles(paths...))
-	var b bytes.Buffer
-	tmpl.Execute(&b, nil)
-	return WritableContent{HtmlContent: b.String(), Path: fileName}
+	var buffer bytes.Buffer
+	tmpl.Execute(&buffer, nil)
+	return WritableContent{HtmlContent: buffer.String(), Path: fileName, assets: collectAssets(workFolder)}
 }
 
-func CollectAssets(workDir string) map[string]Asset {
+func collectAssets(workDir string) map[string]Asset {
 	assetFolder := filepath.Join(workDir, `templates`, `assets`)
 
 	allFiles, err := ioutil.ReadDir(assetFolder)

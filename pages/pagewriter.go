@@ -32,12 +32,12 @@ func WriteContent(targetDir string, page WritableContent) {
 
 	if page.assets != nil {
 		for _, asset := range page.assets {
-			WriteAsset(targetDir, asset)
+			writeAsset(targetDir, asset)
 		}
 	}
 }
 
-func WriteAsset(targetDir string, asset Asset) {
+func writeAsset(targetDir string, asset Asset) {
 	log.Printf("Writing asset %s\n", asset.CopyFromPath)
 	var targetPath string
 	if asset.Context != `` {

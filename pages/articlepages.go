@@ -21,8 +21,10 @@ type Postable struct {
 	ContentAsHtml string
 }
 
-func CollectArticlePages(workDir, templatesFolder string) map[string]WritableContent {
+func CollectArticlePages(workDir string) map[string]WritableContent {
+	templatesFolder := filepath.Join(workDir, `templates`)
 	postsDir := filepath.Join(workDir, "posts")
+
 	var resultMap = make(map[string]WritableContent)
 	for _, postable := range collectPostables(postsDir) {
 		resultMap[postable.Title] = toWritableContent(postable, postsDir, templatesFolder)
@@ -44,7 +46,7 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 
 	contentTemplate := createContentTemplate(postable.ContentAsHtml)
 	t, _ := template.ParseFiles(
-		filepath.Join(templatesFolder, `blogpost`, `blogpost.html`),
+		filepath.Join(templatesFolder, `blogpost.html`),
 		filepath.Join(contentTemplate.Name()),
 		filepath.Join(templatesFolder, "footer.html"),
 		filepath.Join(templatesFolder, "navigation.html"),
