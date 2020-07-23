@@ -15,7 +15,7 @@ func TestBla(t *testing.T) {
 	}
 
 	// when
-	result := pages.ToWritableContent(postable, `testdata/templates`)
+	result := pages.ToWritableContent(postable, `site/templates`)
 
 	// then
 	expectedHtmlContent := `<html>

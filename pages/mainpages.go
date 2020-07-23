@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 )
 
-func CollectMainPages(workDir string) []WritableContent {
-	templatesDir := filepath.Join(workDir, `templates`)
+func CollectMainPages(siteDir string) []WritableContent {
+	templatesDir := filepath.Join(siteDir, `templates`)
 	return []WritableContent{
 		assemblePage(
 			[]string{
@@ -19,7 +19,7 @@ func CollectMainPages(workDir string) []WritableContent {
 				filepath.Join(templatesDir, "head.html"),
 			},
 			"about.html",
-			workDir),
+			siteDir),
 		assemblePage(
 			[]string{
 				filepath.Join(templatesDir, "index.html"),
@@ -28,7 +28,7 @@ func CollectMainPages(workDir string) []WritableContent {
 				filepath.Join(templatesDir, "head.html"),
 			},
 			"index.html",
-			workDir),
+			siteDir),
 	}
 }
 
@@ -40,8 +40,8 @@ func assemblePage(paths []string, fileName string, workFolder string) WritableCo
 	return WritableContent{HtmlContent: buffer.String(), Path: fileName, assets: collectAssets(workFolder)}
 }
 
-func collectAssets(workDir string) map[string]Asset {
-	assetFolder := filepath.Join(workDir, `templates`, `assets`)
+func collectAssets(siteDir string) map[string]Asset {
+	assetFolder := filepath.Join(siteDir, `templates`, `assets`)
 
 	allFiles, err := ioutil.ReadDir(assetFolder)
 	util.PanicOnError(err)

@@ -9,7 +9,7 @@ import (
 )
 
 func PrepareTargetFolder(dir string) {
-	log.Println("Preparing target folder..")
+	log.Printf("Preparing target folder '%s'.\n", dir)
 	if _, err := os.Stat(dir); err == nil {
 		for _, toBeRemoved := range ListFilesWithSuffix(dir, ``) {
 			name := toBeRemoved.Name()

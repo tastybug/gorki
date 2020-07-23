@@ -28,9 +28,9 @@ type Articles struct {
 }
 
 // TODO return an array here
-func CollectArticlePages(workDir string) map[string]WritableContent {
-	templatesFolder := filepath.Join(workDir, `templates`)
-	postsDir := filepath.Join(workDir, "posts")
+func CollectArticlePages(siteDir string) map[string]WritableContent {
+	templatesFolder := filepath.Join(siteDir, `templates`)
+	postsDir := filepath.Join(siteDir, "posts")
 
 	var resultMap = make(map[string]WritableContent)
 	for _, postable := range collectPostables(postsDir) {
@@ -39,8 +39,8 @@ func CollectArticlePages(workDir string) map[string]WritableContent {
 	return resultMap
 }
 
-func CreateOrderListOfPreviewItems(workDir string) Articles {
-	postsDir := filepath.Join(workDir, "posts")
+func CreateOrderListOfPreviewItems(siteDir string) Articles {
+	postsDir := filepath.Join(siteDir, "posts")
 
 	var postables []Postable
 	for _, postable := range collectPostables(postsDir) {
