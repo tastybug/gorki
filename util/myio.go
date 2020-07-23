@@ -2,6 +2,7 @@ package util
 
 import (
 	"bufio"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -53,4 +54,17 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 		}
 	}
 	return
+}
+
+func CopyFile(src, destination string) {
+	in, err := os.Open(src)
+	PanicOnError(err)
+	defer in.Close()
+
+	out, err := os.Create(destination)
+	PanicOnError(err)
+
+	_, err = io.Copy(out, in)
+	PanicOnError(err)
+	defer PanicOnError(out.Close())
 }

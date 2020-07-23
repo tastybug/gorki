@@ -1,4 +1,4 @@
-package main
+package proc
 
 import (
 	"bloggo/util"
@@ -6,15 +6,15 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-type Page struct {
+type WritableContent struct {
 	HtmlContent string
-	Postable    Postable
+	Path        string // can be a file name or subpath in target
 }
 
-func PublishPost(postable Postable, templatesFolder string) Page {
-
+func ToWritableContent(postable Postable, templatesFolder string) WritableContent {
 	var b bytes.Buffer
 
 	contentTemplate := createContentTemplate(postable.ContentAsHtml)
@@ -29,9 +29,13 @@ func PublishPost(postable Postable, templatesFolder string) Page {
 
 	defer os.Remove(contentTemplate.Name())
 
-	return Page{HtmlContent: b.String(), Postable: postable}
+	return WritableContent{HtmlContent: b.String(), Path: getSafeFileName(postable)}
 }
 
 func createContentTemplate(content string) *os.File {
 	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
+}
+
+func getSafeFileName(postable Postable) string {
+	return strings.ReplaceAll(postable.Title, " ", "-") + ".html"
 }

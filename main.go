@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bloggo/proc"
 	"bloggo/util"
 	"fmt"
 	"path/filepath"
@@ -11,16 +12,20 @@ const targetDir string = "target"
 
 func main() {
 	util.PrepareTargetFolder(targetDir)
+	templatesFolder := filepath.Join(workDir, `templates`)
 
-	// write post files
-	for fileName, post := range CollectPostables(workDir) {
-		fmt.Printf("file %s -> %+v\n", fileName, post.Title)
-		page := PublishPost(
-			post,
-			filepath.Join(workDir, `templates`))
-		WritePage(targetDir, page)
+	for _, postable := range proc.CollectPostables(workDir) {
+		writable := proc.ToWritableContent(postable, templatesFolder)
+		fmt.Printf("Writing %s\n", writable.Path)
+		proc.WriteContent(targetDir, writable)
 	}
 
-	// write main files
-	PublishOtherPages(workDir, targetDir)
+	for _, writable := range proc.CollectOtherContent(templatesFolder) {
+		fmt.Printf("Writing %s\n", writable.Path)
+		proc.WriteContent(targetDir, writable)
+	}
+	for _, asset := range proc.CollectAssets(workDir, targetDir) {
+		fmt.Printf("Writing %s\n", asset.TargetPath)
+		proc.WriteAsset(asset)
+	}
 }
