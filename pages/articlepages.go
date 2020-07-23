@@ -12,10 +12,11 @@ import (
 )
 
 type Postable struct {
-	CanonicalName string // Some-Blogpost
+	CanonicalName string // Some-Blogpost, safe for FS
 	SrcFileName   string // Some-Blogpost.md
 	Title         string // From metadata
 	Description   string // From metadata
+	PublishedDate string
 	ContentAsMd   string
 	ContentAsHtml string
 }
@@ -25,7 +26,6 @@ type Articles struct {
 	ArticleCount int
 }
 
-// TODO return an array here
 func CollectArticlePages(siteDir string) []WritableContent {
 	templatesFolder := filepath.Join(siteDir, `templates`)
 	postsDir := filepath.Join(siteDir, "posts")
@@ -103,8 +103,9 @@ func collectAssetsForArticle(postsDir string, postable Postable) []Asset {
 }
 
 func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
-	const structurePattern = `-{3}(?P<meta>[\s\w.:]+)-{3}(?P<content>[\s\w:.#,\-!\[\]\(\)\/]+)`
+	const structurePattern = `-{3}(?P<meta>[\-\s\w.:]+)-{3}(?P<content>[\s\w:.#,\-!\[\]\(\)\/]+)`
 	const titlePattern = `[t|T]itle: ?(?P<value>[\w. ]*)`
+	const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
@@ -115,6 +116,7 @@ func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 		SrcFileName:   fileName,
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),
+		PublishedDate: extractGroup(metadata, publishedDatePattern, `value`),
 		ContentAsMd:   mdContent,
 		ContentAsHtml: string(markdown.ToHTML([]byte(mdContent), nil, nil)),
 	}

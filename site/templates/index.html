@@ -5,21 +5,21 @@
 
 <body>
 
-  {{template "navigation"}}
-  
-  <main>
+{{template "navigation"}}
+
+<main>
 
     {{range .Postables}}
-      <h5>{{.Title}}</h5>
-      <small>2020-12-24?!</small>
-      <p>
-         {{.Description}} <a href="/{{.CanonicalName }}.html">More</a>
-      </p>
+        <h5>{{.Title}}</h5>
+        <small>🗓 {{.PublishedDate}}</small>
+        <p>
+            {{.Description}} <a href="/{{.CanonicalName }}.html">More</a>
+        </p>
     {{end}}
 
-  </main>
+</main>
 
-  {{template "footer"}}
-  
+{{template "footer"}}
+
 </body>
 </html>
