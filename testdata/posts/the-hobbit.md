@@ -7,6 +7,6 @@ Description: JRR Tolkiens classic tale of a Hobbit and his journey.
 
 There once was a Hobbit called Bilbo Baggins, and this is how he looked like:
 
-![Bilbo](hobbit/bilbo.jpg)
+![Bilbo](the-hobbit/bilbo.jpg)
 
 Further text here

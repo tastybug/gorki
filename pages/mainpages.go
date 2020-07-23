@@ -35,7 +35,8 @@ func CollectMainPages(workDir string) []WritableContent {
 func assemblePage(paths []string, fileName string, workFolder string) WritableContent {
 	tmpl := template.Must(template.ParseFiles(paths...))
 	var buffer bytes.Buffer
-	tmpl.Execute(&buffer, nil)
+	articles := CreateOrderListOfPreviewItems(workFolder)
+	tmpl.Execute(&buffer, articles)
 	return WritableContent{HtmlContent: buffer.String(), Path: fileName, assets: collectAssets(workFolder)}
 }
 

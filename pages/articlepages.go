@@ -13,14 +13,21 @@ import (
 )
 
 type Postable struct {
-	canonicalName string // some-blogpost
-	fileName      string // some-blogpost.md
+	CanonicalName string // Some-Blogpost
+	SrcFileName   string // Some-Blogpost.md
+	TargetPath    string
 	Title         string // From metadata
 	Description   string // From metadata
 	ContentAsMd   string
 	ContentAsHtml string
 }
 
+type Articles struct {
+	Postables    []Postable
+	ArticleCount int
+}
+
+// TODO return an array here
 func CollectArticlePages(workDir string) map[string]WritableContent {
 	templatesFolder := filepath.Join(workDir, `templates`)
 	postsDir := filepath.Join(workDir, "posts")
@@ -30,6 +37,16 @@ func CollectArticlePages(workDir string) map[string]WritableContent {
 		resultMap[postable.Title] = toWritableContent(postable, postsDir, templatesFolder)
 	}
 	return resultMap
+}
+
+func CreateOrderListOfPreviewItems(workDir string) Articles {
+	postsDir := filepath.Join(workDir, "posts")
+
+	var postables []Postable
+	for _, postable := range collectPostables(postsDir) {
+		postables = append(postables, postable)
+	}
+	return Articles{Postables: postables, ArticleCount: len(postables)}
 }
 
 func collectPostables(postsDir string) map[string]Postable {
@@ -42,7 +59,7 @@ func collectPostables(postsDir string) map[string]Postable {
 }
 
 func toWritableContent(postable Postable, postsDir string, templatesFolder string) WritableContent {
-	var b bytes.Buffer
+	var htmlString bytes.Buffer
 
 	contentTemplate := createContentTemplate(postable.ContentAsHtml)
 	t, _ := template.ParseFiles(
@@ -51,14 +68,14 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 		filepath.Join(templatesFolder, "footer.html"),
 		filepath.Join(templatesFolder, "navigation.html"),
 		filepath.Join(templatesFolder, "head.html"))
-	err := t.Execute(&b, postable)
+	err := t.Execute(&htmlString, postable)
 	util.PanicOnError(err)
 
 	defer os.Remove(contentTemplate.Name())
 
 	return WritableContent{
-		HtmlContent: b.String(),
-		Path:        getSafeFileName(postable),
+		HtmlContent: htmlString.String(),
+		Path:        postable.TargetPath,
 		assets:      collectAssetsForArticle(postsDir, postable),
 	}
 }
@@ -67,12 +84,12 @@ func createContentTemplate(content string) *os.File {
 	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
 }
 
-func getSafeFileName(postable Postable) string {
-	return strings.ReplaceAll(postable.Title, " ", "-") + ".html"
+func getSafeFileName(title string) string {
+	return strings.ReplaceAll(title, " ", "-") + ".html"
 }
 
 func collectAssetsForArticle(postsDir string, postable Postable) map[string]Asset {
-	baseName := extractGroup(postable.fileName, `(?P<name>.*).md`, `name`)
+	baseName := extractGroup(postable.SrcFileName, `(?P<name>.*).md`, `name`)
 	assetFolderPath := filepath.Join(postsDir, baseName)
 	var assets = make(map[string]Asset)
 	if util.Exists(assetFolderPath) {
@@ -98,9 +115,11 @@ func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
 	mdContent := extractGroup(rawPostableContent, structurePattern, `content`)
+	canonicalName := filepath.Join(extractGroup(fileName, `(?P<name>.*).md`, `name`))
 	return Postable{
-		canonicalName: filepath.Join(extractGroup(fileName, `(?P<name>.*).md`, `name`)),
-		fileName:      fileName,
+		CanonicalName: canonicalName,
+		SrcFileName:   fileName,
+		TargetPath:    `/` + getSafeFileName(canonicalName),
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),
 		ContentAsMd:   mdContent,

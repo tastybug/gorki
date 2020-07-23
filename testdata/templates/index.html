@@ -8,12 +8,14 @@
   {{template "navigation"}}
   
   <main>
-    <ul>
-      <li><a href="/The-Bible.html">Bible</a>, So God said ..</li>
-      <li><a href="/The-Hobbit.html">Hobbit</a>, there was a little hobbit</li>
-    </ul>
 
-    <br>
+    {{range .Postables}}
+      <h5>{{.Title}}</h5>
+      <small>2020-12-24?!</small>
+      <p>
+         {{.Description}} <a href="{{.TargetPath }}">More</a>
+      </p>
+    {{end}}
 
   </main>
 
