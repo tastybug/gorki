@@ -8,7 +8,21 @@ import (
 	"path/filepath"
 )
 
-const templatesFolderName = `templates`
+func CreatePacks(contentPages []ContentPage) []ContentPack {
+	templatesDir := GetTemplatesRootDirectory()
+	pagesThatAreArticles := getPagesThatAreArticles(contentPages)
+
+	var packs []ContentPack
+	for _, page := range contentPages {
+		packs = append(packs,
+			renderAndPackage(
+				page,
+				pagesThatAreArticles,
+				templatesDir),
+		)
+	}
+	return packs
+}
 
 func getPartialsPaths(templatesDir string) []string {
 	return []string{
@@ -18,54 +32,43 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func createArticles(pages []ContentPage) Articles {
+func getPagesThatAreArticles(pages []ContentPage) []ContentPage {
 	var articlesOnly []ContentPage
 	for _, page := range pages {
 		if page.isArticle {
 			articlesOnly = append(articlesOnly, page)
 		}
 	}
-	return Articles{Articles: articlesOnly, ArticleCount: len(articlesOnly)}
+	return articlesOnly
 }
 
-func CreatePacks(contentPages []ContentPage, siteDir string) []ContentPack {
-	templatesDir := filepath.Join(siteDir, templatesFolderName)
-	articles := createArticles(contentPages)
-
-	var packs []ContentPack
-	for _, page := range contentPages {
-		packs = append(packs,
-			renderAndPackage(
-				page,
-				articles,
-				templatesDir),
-		)
-	}
-	return packs
-}
-
-func renderAndPackage(page ContentPage, articles Articles, templatesFolder string) ContentPack {
+func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, templatesRoot string) ContentPack {
 	conf := page.templatingConf
-	paths := []string{filepath.Join(templatesFolder, conf.templateFolder, conf.templateFileName)}
+	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
 		paths = append(paths, extraContentTemplate.Name())
 		defer os.Remove(extraContentTemplate.Name())
 	}
-	paths = append(paths, getPartialsPaths(templatesFolder)...)
+	paths = append(paths, getPartialsPaths(templatesRoot)...)
 
 	var htmlString bytes.Buffer
 	t, _ := template.ParseFiles(paths...)
-	err := t.Execute(&htmlString, articles)
+	err := t.Execute(
+		&htmlString,
+		TemplateDataContext{
+			AllArticles:  pagesThatAreArticles,
+			ArticleCount: len(pagesThatAreArticles),
+			LocalPage:    page,
+		})
 	util.PanicOnError(err)
 
 	return ContentPack{
-		Folders:     conf.resultFolderName,
+		FolderName:  conf.resultFolderName,
 		HtmlContent: htmlString.String(),
 		FileName:    conf.resultFileName,
 		assets: collectAssets(
 			conf.assetFolderPath,
-			`.html`,
 			conf.resultFolderName),
 	}
 }
@@ -74,12 +77,12 @@ func createContentTemplate(content string) *os.File {
 	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
 }
 
-func collectAssets(assetFolderPath, fileExtToAvoid, resultFolderName string) []Asset {
+func collectAssets(assetFolderPath, resultFolderName string) []Asset {
 	var assets []Asset
-	for _, assetFile := range util.ListFilesWithoutSuffix(assetFolderPath, fileExtToAvoid) {
+	for _, assetFile := range util.ListFilesMatching(assetFolderPath, `.*\.[^mdhtml]+`) {
 		assets = append(assets,
-			Asset{Filename: assetFile.Name(),
-				Context:      resultFolderName,
+			Asset{FileName: assetFile.Name(),
+				FolderName:   resultFolderName,
 				CopyFromPath: filepath.Join(assetFolderPath, assetFile.Name())})
 	}
 	if len(assets) > 0 {

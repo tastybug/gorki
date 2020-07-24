@@ -14,3 +14,7 @@ func ExtractGroup(data string, pattern string, groupName string) string {
 	}
 	return ``
 }
+
+func matches(data, pattern string) bool {
+	return regexp.MustCompile(pattern).MatchString(data)
+}

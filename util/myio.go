@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 )
 
 func WriteToTempFile(content string) *os.File {
@@ -22,11 +21,13 @@ func WriteToTempFile(content string) *os.File {
 	return tmpFile
 }
 
-func ListFilesWithoutSuffix(dir, suffix string) []os.FileInfo {
+func ListFilesMatching(dir, pattern string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
 
-	onlyWithSuffix := func(file os.FileInfo) bool { return !strings.HasSuffix(file.Name(), suffix) && !file.IsDir() }
+	onlyWithSuffix := func(file os.FileInfo) bool {
+		return matches(file.Name(), pattern) && !file.IsDir()
+	}
 	return filter(allFiles, onlyWithSuffix)
 }
 
@@ -46,8 +47,7 @@ func ListDirectories(dir string) []os.FileInfo {
 
 func CreateDirIfNotExisting(path string) {
 	if !Exists(path) {
-		err := os.MkdirAll(path, 0740)
-		PanicOnError(err)
+		PanicOnError(os.MkdirAll(path, 0740))
 	}
 }
 

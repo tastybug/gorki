@@ -2,13 +2,14 @@ package pages
 
 import "path/filepath"
 
-func CollectMains(templatesFolderPath string) []ContentPage {
+func CollectMains() []ContentPage {
+	templatesFolderPath := GetTemplatesRootDirectory()
 	return []ContentPage{
 		{
-			BucketName:    "",
-			Title:         "",
-			Description:   "",
-			PublishedDate: "",
+			BucketName:    ``,
+			Title:         ``,
+			Description:   ``,
+			PublishedDate: ``,
 			templatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `index`),
@@ -18,10 +19,10 @@ func CollectMains(templatesFolderPath string) []ContentPage {
 				`index.html`},
 		},
 		{
-			BucketName:    "",
-			Title:         "",
-			Description:   "",
-			PublishedDate: "",
+			BucketName:    ``,
+			Title:         ``,
+			Description:   ``,
+			PublishedDate: ``,
 			templatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `about`),
@@ -31,10 +32,10 @@ func CollectMains(templatesFolderPath string) []ContentPage {
 				`about.html`},
 		},
 		{
-			BucketName:    "",
-			Title:         "",
-			Description:   "",
-			PublishedDate: "",
+			BucketName:    ``,
+			Title:         ``,
+			Description:   ``,
+			PublishedDate: ``,
 			templatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `privacy-imprint`),

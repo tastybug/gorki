@@ -9,9 +9,13 @@ type ContentPage struct {
 	templatingConf TemplatingConf
 }
 
-type Articles struct {
-	Articles     []ContentPage
+type TemplateDataContext struct {
+	// a list of all articles
+	AllArticles []ContentPage
+	// how many articles there are
 	ArticleCount int
+	// this is the data of the template being built
+	LocalPage ContentPage
 }
 
 type TemplatingConf struct {
@@ -21,4 +25,17 @@ type TemplatingConf struct {
 	templateFileName string
 	resultFolderName string
 	resultFileName   string
+}
+
+type ContentPack struct {
+	FolderName  string
+	FileName    string
+	HtmlContent string
+	assets      []Asset
+}
+
+type Asset struct {
+	FolderName   string
+	FileName     string
+	CopyFromPath string
 }
