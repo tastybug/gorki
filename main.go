@@ -31,12 +31,6 @@ func main() {
 		log.Println("Done")
 	}
 
-	for _, globalAsset := range pages.CollectGlobalAssets(siteDir) {
-		log.Printf("Writing shared asset %s\n", globalAsset.CopyFromPath)
-		pages.WriteAsset(targetDir, globalAsset)
-		log.Println("Done")
-	}
-
 	log.Println("Finished generation.")
 	util.PrintMemUsage()
 }

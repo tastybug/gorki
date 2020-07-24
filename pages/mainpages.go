@@ -4,7 +4,6 @@ import (
 	"bloggo/util"
 	"bytes"
 	"html/template"
-	"io/ioutil"
 	"path/filepath"
 )
 
@@ -57,10 +56,10 @@ func assemblePage(paths []string, canonicalName string, siteDir string, putIntoB
 		HtmlContent: buffer.String(),
 		FileName:    canonicalName + ".html",
 		Folders:     folderToBePutIt,
-		assets:      collectContentSpecificAssets(siteDir, canonicalName)}
+		assets:      collectContentSpecificAssets(siteDir, canonicalName, putIntoBucket)}
 }
 
-func collectContentSpecificAssets(siteDir, canonicalName string) []Asset {
+func collectContentSpecificAssets(siteDir, canonicalName string, putIntoBucket bool) []Asset {
 	assetFolder := filepath.Join(siteDir, `templates`, canonicalName)
 
 	if !util.Exists(assetFolder) {
@@ -69,22 +68,13 @@ func collectContentSpecificAssets(siteDir, canonicalName string) []Asset {
 
 	allFiles := util.ListFilesWithoutSuffix(assetFolder, `.html`)
 
-	var resultMap []Asset
-	for _, fileInfo := range allFiles {
-		resultMap = append(resultMap, Asset{Filename: fileInfo.Name(), Context: canonicalName, CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())})
+	var folderToBePutIt string
+	if putIntoBucket {
+		folderToBePutIt = canonicalName
 	}
-	return resultMap
-}
-
-func CollectGlobalAssets(siteDir string) []Asset {
-	assetFolder := filepath.Join(siteDir, `templates`, `global-assets`)
-
-	allFiles, err := ioutil.ReadDir(assetFolder)
-	util.PanicOnError(err)
-
 	var resultMap []Asset
 	for _, fileInfo := range allFiles {
-		resultMap = append(resultMap, Asset{Filename: fileInfo.Name(), CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())})
+		resultMap = append(resultMap, Asset{Filename: fileInfo.Name(), Context: folderToBePutIt, CopyFromPath: filepath.Join(assetFolder, fileInfo.Name())})
 	}
 	return resultMap
 }
