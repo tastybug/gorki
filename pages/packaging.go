@@ -10,11 +10,6 @@ import (
 
 const templatesFolderName = `templates`
 
-type Articles struct {
-	Articles     []ContentPage
-	ArticleCount int
-}
-
 func getPartialsPaths(templatesDir string) []string {
 	return []string{
 		filepath.Join(templatesDir, "footer.html"),

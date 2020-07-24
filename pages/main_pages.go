@@ -2,15 +2,6 @@ package pages
 
 import "path/filepath"
 
-type TemplatingConf struct {
-	extraContent     string
-	assetFolderPath  string
-	templateFolder   string
-	templateFileName string
-	resultFolderName string
-	resultFileName   string
-}
-
 func CollectMains(templatesFolderPath string) []ContentPage {
 	return []ContentPage{
 		{

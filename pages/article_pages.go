@@ -7,15 +7,6 @@ import (
 	"path/filepath"
 )
 
-type ContentPage struct {
-	isArticle      bool
-	BucketName     string
-	Title          string
-	Description    string
-	PublishedDate  string
-	templatingConf TemplatingConf
-}
-
 const articleDirName string = `posts`
 
 func CollectArticles(siteDir string) []ContentPage {
