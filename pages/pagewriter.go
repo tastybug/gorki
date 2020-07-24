@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-type WritableContent struct {
+type ContentPack struct {
 	Folders     string
 	FileName    string
 	HtmlContent string
@@ -21,7 +21,7 @@ type Asset struct {
 	CopyFromPath string
 }
 
-func WriteContent(targetDir string, writable WritableContent) {
+func WriteContent(targetDir string, writable ContentPack) {
 	if writable.Folders != `` {
 		util.PanicOnError(os.MkdirAll(filepath.Join(targetDir, writable.Folders), 0740))
 	}

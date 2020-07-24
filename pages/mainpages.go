@@ -8,27 +8,30 @@ import (
 	"path/filepath"
 )
 
-func CollectMainPages(siteDir string) []WritableContent {
+func CollectMainPages(articles Articles, siteDir string) []ContentPack {
 	templatesDir := filepath.Join(siteDir, `templates`)
-	return []WritableContent{
+	return []ContentPack{
 		assemblePage(
 			append([]string{filepath.Join(templatesDir, `about`, `about.html`)},
 				getPartialsPaths(templatesDir)...),
 			"about",
 			siteDir,
-			true),
+			true,
+			articles),
 		assemblePage(
 			append([]string{filepath.Join(templatesDir, `privacy-imprint`, `privacy-imprint.html`)},
 				getPartialsPaths(templatesDir)...),
 			"privacy-imprint",
 			siteDir,
-			true),
+			true,
+			articles),
 		assemblePage(
 			append([]string{filepath.Join(templatesDir, `index`, `index.html`)},
 				getPartialsPaths(templatesDir)...),
 			"index",
 			siteDir,
-			false),
+			false,
+			articles),
 	}
 }
 
@@ -40,18 +43,17 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func assemblePage(paths []string, canonicalName string, siteDir string, putIntoBucket bool) WritableContent {
+func assemblePage(paths []string, canonicalName string, siteDir string, putIntoBucket bool, articles Articles) ContentPack {
 	tmpl := template.Must(template.ParseFiles(paths...))
 	var buffer bytes.Buffer
-	articles := CreateOrderListOfPreviewItems(siteDir)
-	tmpl.Execute(&buffer, articles) // just in case the template wants to render article list
+	tmpl.Execute(&buffer, articles) // articles are provided in case the template wants to show something here
 
 	var folderToBePutIt string
 	if putIntoBucket {
 		folderToBePutIt = canonicalName
 	}
 
-	return WritableContent{
+	return ContentPack{
 		HtmlContent: buffer.String(),
 		FileName:    canonicalName + ".html",
 		Folders:     folderToBePutIt,
