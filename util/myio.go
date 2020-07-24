@@ -26,7 +26,7 @@ func ListFilesWithoutSuffix(dir, suffix string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
 
-	onlyWithSuffix := func(file os.FileInfo) bool { return !strings.HasSuffix(file.Name(), suffix) }
+	onlyWithSuffix := func(file os.FileInfo) bool { return !strings.HasSuffix(file.Name(), suffix) && !file.IsDir() }
 	return filter(allFiles, onlyWithSuffix)
 }
 

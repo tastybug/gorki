@@ -18,6 +18,7 @@ func main() {
 	util.PrepareTargetFolder(targetDir)
 
 	articles := pages.CreateOrderListOfArticles(siteDir)
+	mains := pages.CollectMains()
 
 	for _, article := range pages.TurnArticlesIntoContentPack(articles, siteDir) {
 		log.Printf("Writing article %s\n", article.FileName)
@@ -25,7 +26,7 @@ func main() {
 		log.Println("Done")
 	}
 
-	for _, mainPage := range pages.CollectMainPagesContentPacks(articles, siteDir) {
+	for _, mainPage := range pages.CollectMainPagesContentPacks(articles, mains, siteDir) {
 		log.Printf("Writing main page %s\n", mainPage.FileName)
 		pages.WriteContentPack(targetDir, mainPage)
 		log.Println("Done")
