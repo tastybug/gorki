@@ -17,18 +17,18 @@ func main() {
 	log.Printf("Using target directory '%s'.", targetDir)
 	util.PrepareTargetFolder(targetDir)
 
-	articles := pages.CreateOrderListOfArticles(siteDir)
-	mains := pages.CollectMains()
+	publishablePages := pages.CollectArticles(siteDir)
+	publishablePages = append(publishablePages, pages.CollectMains(filepath.Join(siteDir, `templates`))...)
 
-	for _, article := range pages.TurnArticlesIntoContentPack(articles, siteDir) {
-		log.Printf("Writing article %s\n", article.FileName)
-		pages.WriteContentPack(targetDir, article)
-		log.Println("Done")
-	}
+	//for _, article := range pages.TurnArticlesIntoContentPack(articles, siteDir) {
+	//	log.Printf("Writing article %s\n", article.FileName)
+	//	pages.WriteContentPack(targetDir, article)
+	//	log.Println("Done")
+	//}
 
-	for _, mainPage := range pages.CollectMainPagesContentPacks(articles, mains, siteDir) {
-		log.Printf("Writing main page %s\n", mainPage.FileName)
-		pages.WriteContentPack(targetDir, mainPage)
+	for _, pack := range pages.CreatePacks(publishablePages, siteDir) {
+		log.Printf("Writing page %s\n", pack.FileName)
+		pages.WriteContentPack(targetDir, pack)
 		log.Println("Done")
 	}
 
