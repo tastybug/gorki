@@ -12,15 +12,23 @@ func CollectMainPages(siteDir string) []WritableContent {
 	templatesDir := filepath.Join(siteDir, `templates`)
 	return []WritableContent{
 		assemblePage(
-			append([]string{filepath.Join(templatesDir, "about.html")},
+			append([]string{filepath.Join(templatesDir, `about`, `about.html`)},
 				getPartialsPaths(templatesDir)...),
 			"about",
-			siteDir),
+			siteDir,
+			true),
 		assemblePage(
-			append([]string{filepath.Join(templatesDir, "index.html")},
+			append([]string{filepath.Join(templatesDir, `privacy-imprint`, `privacy-imprint.html`)},
+				getPartialsPaths(templatesDir)...),
+			"privacy-imprint",
+			siteDir,
+			true),
+		assemblePage(
+			append([]string{filepath.Join(templatesDir, `index`, `index.html`)},
 				getPartialsPaths(templatesDir)...),
 			"index",
-			siteDir),
+			siteDir,
+			false),
 	}
 }
 
@@ -32,12 +40,22 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func assemblePage(paths []string, canonicalName string, siteDir string) WritableContent {
+func assemblePage(paths []string, canonicalName string, siteDir string, putIntoBucket bool) WritableContent {
 	tmpl := template.Must(template.ParseFiles(paths...))
 	var buffer bytes.Buffer
 	articles := CreateOrderListOfPreviewItems(siteDir)
 	tmpl.Execute(&buffer, articles) // just in case the template wants to render article list
-	return WritableContent{HtmlContent: buffer.String(), FileName: canonicalName + ".html", assets: collectContentSpecificAssets(siteDir, canonicalName)}
+
+	var folderToBePutIt string
+	if putIntoBucket {
+		folderToBePutIt = canonicalName
+	}
+
+	return WritableContent{
+		HtmlContent: buffer.String(),
+		FileName:    canonicalName + ".html",
+		Folders:     folderToBePutIt,
+		assets:      collectContentSpecificAssets(siteDir, canonicalName)}
 }
 
 func collectContentSpecificAssets(siteDir, canonicalName string) []Asset {
@@ -47,8 +65,7 @@ func collectContentSpecificAssets(siteDir, canonicalName string) []Asset {
 		return nil
 	}
 
-	allFiles, err := ioutil.ReadDir(assetFolder)
-	util.PanicOnError(err)
+	allFiles := util.ListFilesWithoutSuffix(assetFolder, `.html`)
 
 	var resultMap []Asset
 	for _, fileInfo := range allFiles {

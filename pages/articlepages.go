@@ -64,9 +64,9 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 
 	contentTemplate := createContentTemplate(postable.ContentAsHtml)
 	t, _ := template.ParseFiles(
-		filepath.Join(templatesFolder, `blogpost.html`),
+		filepath.Join(templatesFolder, `blogpost`, `blogpost.html`),
 		filepath.Join(contentTemplate.Name()),
-		filepath.Join(templatesFolder, "footer.html"),
+		filepath.Join(templatesFolder, "footer.html"), // TODO use getPartials
 		filepath.Join(templatesFolder, "navigation.html"),
 		filepath.Join(templatesFolder, "head.html"))
 	err := t.Execute(&htmlString, postable)
