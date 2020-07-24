@@ -1,6 +1,7 @@
 package pages
 
 type ContentPage struct {
+	isDraft        bool
 	isArticle      bool
 	BucketName     string
 	Title          string

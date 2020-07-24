@@ -2,6 +2,7 @@
 Title: The Hobbit
 PublishedDate: 2020-03-01
 Description: JRR Tolkiens classic tale of a Hobbit and his journey.
+Draft: false
 ---
 
 # The Hobbit
