@@ -37,7 +37,7 @@ func assemblePage(paths []string, canonicalName string, siteDir string) Writable
 	var buffer bytes.Buffer
 	articles := CreateOrderListOfPreviewItems(siteDir)
 	tmpl.Execute(&buffer, articles) // just in case the template wants to render article list
-	return WritableContent{HtmlContent: buffer.String(), PathToWriteTo: canonicalName + ".html", assets: collectContentSpecificAssets(siteDir, canonicalName)}
+	return WritableContent{HtmlContent: buffer.String(), FileName: canonicalName + ".html", assets: collectContentSpecificAssets(siteDir, canonicalName)}
 }
 
 func collectContentSpecificAssets(siteDir, canonicalName string) []Asset {

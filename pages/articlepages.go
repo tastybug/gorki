@@ -12,8 +12,7 @@ import (
 )
 
 type Postable struct {
-	CanonicalName string // Some-Blogpost, safe for FS
-	SrcFileName   string // Some-Blogpost.md
+	BucketName    string
 	Title         string // From metadata
 	Description   string // From metadata
 	PublishedDate string
@@ -49,8 +48,13 @@ func CreateOrderListOfPreviewItems(siteDir string) Articles {
 
 func collectPostables(postsDir string) []Postable {
 	var postables []Postable
-	for _, mdFile := range util.ListFilesWithSuffix(postsDir, ".md") {
-		postables = append(postables, AssemblePostable(mdFile.Name(), util.ReadFileContent(postsDir, mdFile.Name())))
+	for _, bucketName := range util.ListDirectories(postsDir) {
+		articlePath := filepath.Join(postsDir, bucketName.Name(), `article.md`)
+		if util.Exists(articlePath) {
+			postables = append(postables, AssemblePostable(bucketName.Name(), util.ReadFileContent(articlePath)))
+		} else {
+			log.Printf("Skipping %s, no 'article.md' found in it.", bucketName)
+		}
 	}
 	return postables
 }
@@ -71,9 +75,10 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 	defer os.Remove(contentTemplate.Name())
 
 	return WritableContent{
-		HtmlContent:   htmlString.String(),
-		PathToWriteTo: "/" + postable.CanonicalName + ".html",
-		assets:        collectAssetsForArticle(postsDir, postable),
+		Folders:     postable.BucketName,
+		HtmlContent: htmlString.String(),
+		FileName:    "article.html",
+		assets:      collectAssetsForArticle(postsDir, postable),
 	}
 }
 
@@ -82,15 +87,14 @@ func createContentTemplate(content string) *os.File {
 }
 
 func collectAssetsForArticle(postsDir string, postable Postable) []Asset {
-	baseName := extractGroup(postable.SrcFileName, `(?P<name>.*).md`, `name`)
-	assetFolderPath := filepath.Join(postsDir, baseName)
+	assetFolderPath := filepath.Join(postsDir, postable.BucketName)
 	var assets []Asset
 	if util.Exists(assetFolderPath) {
-		log.Println("Found assets for " + postable.Title)
-		for _, assetFile := range util.ListFilesWithSuffix(assetFolderPath, ``) {
+		for _, assetFile := range util.ListFilesWithoutSuffix(assetFolderPath, `.md`) {
+			log.Println("Article %s has asset %s "+postable.BucketName, assetFile)
 			assets = append(assets,
 				Asset{
-					Context:      baseName,
+					Context:      postable.BucketName,
 					Filename:     assetFile.Name(),
 					CopyFromPath: filepath.Join(assetFolderPath, assetFile.Name())})
 		}
@@ -102,7 +106,7 @@ func collectAssetsForArticle(postsDir string, postable Postable) []Asset {
 	}
 }
 
-func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
+func AssemblePostable(bucketName, rawPostableContent string) (post Postable) {
 	const structurePattern = `-{3}(?P<meta>[\-\s\w.:]+)-{3}(?P<content>[\s\w:.#,\-!\[\]\(\)\/]+)`
 	const titlePattern = `[t|T]itle: ?(?P<value>[\w. ]*)`
 	const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
@@ -110,10 +114,8 @@ func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 
 	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
 	mdContent := extractGroup(rawPostableContent, structurePattern, `content`)
-	canonicalName := filepath.Join(extractGroup(fileName, `(?P<name>.*).md`, `name`))
 	return Postable{
-		CanonicalName: canonicalName,
-		SrcFileName:   fileName,
+		BucketName:    bucketName,
 		Title:         extractGroup(metadata, titlePattern, `value`),
 		Description:   extractGroup(metadata, descriptionPattern, `value`),
 		PublishedDate: extractGroup(metadata, publishedDatePattern, `value`),
@@ -122,6 +124,7 @@ func AssemblePostable(fileName, rawPostableContent string) (post Postable) {
 	}
 }
 
+// TODO move to util
 func extractGroup(content string, pattern string, groupAlias string) string {
 
 	r := regexp.MustCompile(pattern)

@@ -8,4 +8,4 @@ Description: So God said ..
 
 Be a good boy!
 
-![God](2020-02-01-the-bible/Hand-of-God.jpg)
+![God](Hand-of-God.jpg)

@@ -18,13 +18,13 @@ func main() {
 	util.PrepareTargetFolder(targetDir)
 
 	for _, article := range pages.CollectArticlePages(siteDir) {
-		log.Printf("Writing article %s\n", article.PathToWriteTo)
+		log.Printf("Writing article %s\n", article.FileName)
 		pages.WriteContent(targetDir, article)
 		log.Println("Done")
 	}
 
 	for _, mainPage := range pages.CollectMainPages(siteDir) {
-		log.Printf("Writing main page %s\n", mainPage.PathToWriteTo)
+		log.Printf("Writing main page %s\n", mainPage.FileName)
 		pages.WriteContent(targetDir, mainPage)
 		log.Println("Done")
 	}

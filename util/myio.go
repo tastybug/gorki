@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -23,6 +22,15 @@ func WriteToTempFile(content string) *os.File {
 	return tmpFile
 }
 
+// TODO clean this up
+func ListFilesWithoutSuffix(dir, suffix string) []os.FileInfo {
+	allFiles, err := ioutil.ReadDir(dir)
+	PanicOnError(err)
+
+	onlyWithSuffix := func(file os.FileInfo) bool { return !strings.HasSuffix(file.Name(), suffix) }
+	return filter(allFiles, onlyWithSuffix)
+}
+
 func ListFilesWithSuffix(dir, suffix string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
@@ -31,8 +39,16 @@ func ListFilesWithSuffix(dir, suffix string) []os.FileInfo {
 	return filter(allFiles, onlyWithSuffix)
 }
 
-func ReadFileContent(dir string, fileName string) string {
-	file, err := os.Open(filepath.Join(dir, fileName))
+func ListDirectories(dir string) []os.FileInfo {
+	allFiles, err := ioutil.ReadDir(dir)
+	PanicOnError(err)
+
+	isDir := func(file os.FileInfo) bool { return file.IsDir() }
+	return filter(allFiles, isDir)
+}
+
+func ReadFileContent(path string) string {
+	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}

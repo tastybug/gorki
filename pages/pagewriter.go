@@ -9,9 +9,10 @@ import (
 )
 
 type WritableContent struct {
-	PathToWriteTo string // can be a file name or subpath in target
-	HtmlContent   string
-	assets        []Asset
+	Folders     string
+	FileName    string
+	HtmlContent string
+	assets      []Asset
 }
 
 type Asset struct {
@@ -21,7 +22,10 @@ type Asset struct {
 }
 
 func WriteContent(targetDir string, writable WritableContent) {
-	f, err := os.Create(filepath.Join(targetDir, writable.PathToWriteTo))
+	if writable.Folders != `` {
+		util.PanicOnError(os.MkdirAll(filepath.Join(targetDir, writable.Folders), 0740))
+	}
+	f, err := os.Create(filepath.Join(targetDir, writable.Folders, writable.FileName))
 	util.PanicOnError(err)
 	defer f.Close()
 	fileWriter := bufio.NewWriter(f)
@@ -42,8 +46,10 @@ func WriteAsset(targetDir string, asset Asset) {
 	var targetPath string
 	if asset.Context != `` {
 		targetPath = filepath.Join(targetDir, asset.Context, asset.Filename)
-		err := os.Mkdir(filepath.Join(targetDir, asset.Context), 0740)
-		util.PanicOnError(err)
+		if !util.Exists(filepath.Join(targetDir, asset.Context)) { // TODO add createDirIfNotExists
+			err := os.Mkdir(filepath.Join(targetDir, asset.Context), 0740)
+			util.PanicOnError(err)
+		}
 	} else {
 		targetPath = filepath.Join(targetDir, asset.Filename)
 	}
