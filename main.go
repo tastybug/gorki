@@ -18,14 +18,20 @@ func main() {
 	util.PrepareTargetFolder(targetDir)
 
 	for _, article := range pages.CollectArticlePages(siteDir) {
-		log.Printf("Writing article %s\n", article.Path)
+		log.Printf("Writing article %s\n", article.PathToWriteTo)
 		pages.WriteContent(targetDir, article)
 		log.Println("Done")
 	}
 
 	for _, mainPage := range pages.CollectMainPages(siteDir) {
-		log.Printf("Writing main page %s\n", mainPage.Path)
+		log.Printf("Writing main page %s\n", mainPage.PathToWriteTo)
 		pages.WriteContent(targetDir, mainPage)
+		log.Println("Done")
+	}
+
+	for _, globalAsset := range pages.CollectGlobalAssets(siteDir) {
+		log.Printf("Writing shared asset %s\n", globalAsset.CopyFromPath)
+		pages.WriteAsset(targetDir, globalAsset)
 		log.Println("Done")
 	}
 

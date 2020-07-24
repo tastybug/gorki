@@ -71,9 +71,9 @@ func toWritableContent(postable Postable, postsDir string, templatesFolder strin
 	defer os.Remove(contentTemplate.Name())
 
 	return WritableContent{
-		HtmlContent: htmlString.String(),
-		Path:        "/" + postable.CanonicalName + ".html",
-		assets:      collectAssetsForArticle(postsDir, postable),
+		HtmlContent:   htmlString.String(),
+		PathToWriteTo: "/" + postable.CanonicalName + ".html",
+		assets:        collectAssetsForArticle(postsDir, postable),
 	}
 }
 

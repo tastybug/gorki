@@ -9,9 +9,9 @@ import (
 )
 
 type WritableContent struct {
-	Path        string // can be a file name or subpath in target
-	HtmlContent string
-	assets      []Asset
+	PathToWriteTo string // can be a file name or subpath in target
+	HtmlContent   string
+	assets        []Asset
 }
 
 type Asset struct {
@@ -21,7 +21,7 @@ type Asset struct {
 }
 
 func WriteContent(targetDir string, writable WritableContent) {
-	f, err := os.Create(filepath.Join(targetDir, writable.Path))
+	f, err := os.Create(filepath.Join(targetDir, writable.PathToWriteTo))
 	util.PanicOnError(err)
 	defer f.Close()
 	fileWriter := bufio.NewWriter(f)
@@ -32,12 +32,12 @@ func WriteContent(targetDir string, writable WritableContent) {
 
 	if writable.assets != nil {
 		for _, asset := range writable.assets {
-			writeAsset(targetDir, asset)
+			WriteAsset(targetDir, asset)
 		}
 	}
 }
 
-func writeAsset(targetDir string, asset Asset) {
+func WriteAsset(targetDir string, asset Asset) {
 	log.Printf("Writing asset %s\n", asset.CopyFromPath)
 	var targetPath string
 	if asset.Context != `` {

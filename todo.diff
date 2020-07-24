@@ -8,3 +8,4 @@
 - Generate a "Tags Page"
 - Generate RSS template
 - Put everything in a folder, folder name is the canonical name. One Md file is expected in there, if it's more, panic. Foldername has structure "YYYY-MM-DD-this-is-the-canonical-name"
+- draft flag in posts
