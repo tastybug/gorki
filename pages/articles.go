@@ -5,13 +5,12 @@ import (
 	"github.com/gomarkdown/markdown"
 	"log"
 	"path/filepath"
-	"regexp"
 )
 
 type Article struct {
 	BucketName    string
-	Title         string // From metadata
-	Description   string // From metadata
+	Title         string
+	Description   string
 	PublishedDate string
 	ContentAsHtml string
 }
@@ -50,27 +49,13 @@ func assembleArticle(bucketName, rawPostableContent string) Article {
 	const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 	const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 
-	metadata := extractGroup(rawPostableContent, structurePattern, `meta`)
-	mdContent := extractGroup(rawPostableContent, structurePattern, `content`)
+	metadata := util.ExtractGroup(rawPostableContent, structurePattern, `meta`)
+	mdContent := util.ExtractGroup(rawPostableContent, structurePattern, `content`)
 	return Article{
 		BucketName:    bucketName,
-		Title:         extractGroup(metadata, titlePattern, `value`),
-		Description:   extractGroup(metadata, descriptionPattern, `value`),
-		PublishedDate: extractGroup(metadata, publishedDatePattern, `value`),
+		Title:         util.ExtractGroup(metadata, titlePattern, `value`),
+		Description:   util.ExtractGroup(metadata, descriptionPattern, `value`),
+		PublishedDate: util.ExtractGroup(metadata, publishedDatePattern, `value`),
 		ContentAsHtml: string(markdown.ToHTML([]byte(mdContent), nil, nil)),
 	}
-}
-
-// TODO move to util
-func extractGroup(content string, pattern string, groupAlias string) string {
-
-	r := regexp.MustCompile(pattern)
-	result := r.FindStringSubmatch(content)
-
-	for index, value := range r.SubexpNames() {
-		if value == groupAlias && len(result) >= index {
-			return result[index]
-		}
-	}
-	return ``
 }

@@ -22,7 +22,6 @@ func WriteToTempFile(content string) *os.File {
 	return tmpFile
 }
 
-// TODO clean this up
 func ListFilesWithoutSuffix(dir, suffix string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
@@ -31,12 +30,10 @@ func ListFilesWithoutSuffix(dir, suffix string) []os.FileInfo {
 	return filter(allFiles, onlyWithSuffix)
 }
 
-func ListFilesWithSuffix(dir, suffix string) []os.FileInfo {
+func ListFilesAndDirs(dir string) []os.FileInfo {
 	allFiles, err := ioutil.ReadDir(dir)
 	PanicOnError(err)
-
-	onlyWithSuffix := func(file os.FileInfo) bool { return strings.HasSuffix(file.Name(), suffix) }
-	return filter(allFiles, onlyWithSuffix)
+	return allFiles
 }
 
 func ListDirectories(dir string) []os.FileInfo {
@@ -45,6 +42,13 @@ func ListDirectories(dir string) []os.FileInfo {
 
 	isDir := func(file os.FileInfo) bool { return file.IsDir() }
 	return filter(allFiles, isDir)
+}
+
+func CreateDirIfNotExisting(path string) {
+	if !Exists(path) {
+		err := os.MkdirAll(path, 0740)
+		PanicOnError(err)
+	}
 }
 
 func ReadFileContent(path string) string {
@@ -72,12 +76,12 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 	return
 }
 
-func CopyFile(src, destination string) {
-	in, err := os.Open(src)
+func CopyFile(sourcePath, destinationPath string) {
+	in, err := os.Open(sourcePath)
 	PanicOnError(err)
 	defer in.Close()
 
-	out, err := os.Create(destination)
+	out, err := os.Create(destinationPath)
 	PanicOnError(err)
 
 	_, err = io.Copy(out, in)

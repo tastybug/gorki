@@ -3,9 +3,10 @@
 - CI
 - Document expected structure of a site, format of posts
 + Generate a "Blog Post as HTML"
-- Generate a "Blog Posts Overview Page"
-- Generate a "Blog Posts Archive Page"
++ Generate a "Blog Posts Overview Page"
+- Generate a "Blog Posts Archive Page" / Simple Pagination
 - Generate a "Tags Page"
 - Generate RSS template
 - Put everything in a folder, folder name is the canonical name. One Md file is expected in there, if it's more, panic. Foldername has structure "YYYY-MM-DD-this-is-the-canonical-name"
 - draft flag in posts
+- chronologically ordered list of articles

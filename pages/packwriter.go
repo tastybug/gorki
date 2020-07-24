@@ -21,7 +21,7 @@ type Asset struct {
 	CopyFromPath string
 }
 
-func WriteContent(targetDir string, writable ContentPack) {
+func WriteContentPack(targetDir string, writable ContentPack) {
 	if writable.Folders != `` {
 		util.PanicOnError(os.MkdirAll(filepath.Join(targetDir, writable.Folders), 0740))
 	}
@@ -34,22 +34,17 @@ func WriteContent(targetDir string, writable ContentPack) {
 	err = fileWriter.Flush()
 	util.PanicOnError(err)
 
-	if writable.assets != nil {
-		for _, asset := range writable.assets {
-			WriteAsset(targetDir, asset)
-		}
+	for _, asset := range writable.assets {
+		writeAsset(targetDir, asset)
 	}
 }
 
-func WriteAsset(targetDir string, asset Asset) {
+func writeAsset(targetDir string, asset Asset) {
 	log.Printf("Writing asset %s\n", asset.CopyFromPath)
 	var targetPath string
 	if asset.Context != `` {
 		targetPath = filepath.Join(targetDir, asset.Context, asset.Filename)
-		if !util.Exists(filepath.Join(targetDir, asset.Context)) { // TODO add createDirIfNotExists
-			err := os.Mkdir(filepath.Join(targetDir, asset.Context), 0740)
-			util.PanicOnError(err)
-		}
+		util.CreateDirIfNotExisting(filepath.Join(targetDir, asset.Context))
 	} else {
 		targetPath = filepath.Join(targetDir, asset.Filename)
 	}

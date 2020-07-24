@@ -21,13 +21,13 @@ func main() {
 
 	for _, article := range pages.TurnArticlesIntoContentPack(articles, siteDir) {
 		log.Printf("Writing article %s\n", article.FileName)
-		pages.WriteContent(targetDir, article)
+		pages.WriteContentPack(targetDir, article)
 		log.Println("Done")
 	}
 
-	for _, mainPage := range pages.CollectMainPages(articles, siteDir) {
+	for _, mainPage := range pages.CollectMainPagesContentPacks(articles, siteDir) {
 		log.Printf("Writing main page %s\n", mainPage.FileName)
-		pages.WriteContent(targetDir, mainPage)
+		pages.WriteContentPack(targetDir, mainPage)
 		log.Println("Done")
 	}
 

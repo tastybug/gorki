@@ -7,24 +7,24 @@ import (
 	"path/filepath"
 )
 
-func CollectMainPages(articles Articles, siteDir string) []ContentPack {
+func CollectMainPagesContentPacks(articles Articles, siteDir string) []ContentPack {
 	templatesDir := filepath.Join(siteDir, `templates`)
 	return []ContentPack{
-		assemblePage(
+		assemblePack(
 			append([]string{filepath.Join(templatesDir, `about`, `about.html`)},
 				getPartialsPaths(templatesDir)...),
 			"about",
 			siteDir,
 			true,
 			articles),
-		assemblePage(
+		assemblePack(
 			append([]string{filepath.Join(templatesDir, `privacy-imprint`, `privacy-imprint.html`)},
 				getPartialsPaths(templatesDir)...),
 			"privacy-imprint",
 			siteDir,
 			true,
 			articles),
-		assemblePage(
+		assemblePack(
 			append([]string{filepath.Join(templatesDir, `index`, `index.html`)},
 				getPartialsPaths(templatesDir)...),
 			"index",
@@ -42,7 +42,7 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func assemblePage(paths []string, canonicalName string, siteDir string, putIntoBucket bool, articles Articles) ContentPack {
+func assemblePack(paths []string, canonicalName string, siteDir string, putIntoBucket bool, articles Articles) ContentPack {
 	tmpl := template.Must(template.ParseFiles(paths...))
 	var buffer bytes.Buffer
 	tmpl.Execute(&buffer, articles) // articles are provided in case the template wants to show something here
@@ -56,10 +56,10 @@ func assemblePage(paths []string, canonicalName string, siteDir string, putIntoB
 		HtmlContent: buffer.String(),
 		FileName:    canonicalName + ".html",
 		Folders:     folderToBePutIt,
-		assets:      collectContentSpecificAssets(siteDir, canonicalName, putIntoBucket)}
+		assets:      collectAssets(siteDir, canonicalName, putIntoBucket)}
 }
 
-func collectContentSpecificAssets(siteDir, canonicalName string, putIntoBucket bool) []Asset {
+func collectAssets(siteDir, canonicalName string, putIntoBucket bool) []Asset {
 	assetFolder := filepath.Join(siteDir, `templates`, canonicalName)
 
 	if !util.Exists(assetFolder) {

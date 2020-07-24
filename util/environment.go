@@ -11,7 +11,7 @@ import (
 func PrepareTargetFolder(dir string) {
 	log.Printf("Preparing target folder '%s'.\n", dir)
 	if _, err := os.Stat(dir); err == nil {
-		for _, toBeRemoved := range ListFilesWithSuffix(dir, ``) {
+		for _, toBeRemoved := range ListFilesAndDirs(dir) {
 			name := toBeRemoved.Name()
 			log.Println("Removing " + filepath.Join(dir, name) + " from target.")
 			PanicOnError(os.RemoveAll(filepath.Join(dir, name)))
