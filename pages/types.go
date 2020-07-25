@@ -7,7 +7,7 @@ type ContentPage struct {
 	Title          string
 	Description    string
 	PublishedDate  string
-	templatingConf TemplatingConf
+	TemplatingConf TemplatingConf
 }
 
 type TemplateDataContext struct {
@@ -25,7 +25,7 @@ type TemplatingConf struct {
 	templateFolder   string
 	templateFileName string
 	resultFolderName string
-	resultFileName   string
+	ResultFileName   string
 }
 
 type ContentPack struct {

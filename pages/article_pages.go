@@ -46,7 +46,7 @@ func assembleArticle(articlesRootPath, bucketName, rawContent string) ContentPag
 		Title:         title,
 		Description:   description,
 		PublishedDate: publishedDate,
-		templatingConf: TemplatingConf{
+		TemplatingConf: TemplatingConf{
 			string(markdown.ToHTML([]byte(mdContent), nil, nil)),
 			filepath.Join(articlesRootPath, bucketName),
 			`blogpost`,

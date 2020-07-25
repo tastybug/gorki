@@ -10,7 +10,7 @@ func CollectMains() []ContentPage {
 			Title:         ``,
 			Description:   ``,
 			PublishedDate: ``,
-			templatingConf: TemplatingConf{
+			TemplatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `index`),
 				`index`,
@@ -23,7 +23,7 @@ func CollectMains() []ContentPage {
 			Title:         ``,
 			Description:   ``,
 			PublishedDate: ``,
-			templatingConf: TemplatingConf{
+			TemplatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `about`),
 				`about`,
@@ -36,13 +36,26 @@ func CollectMains() []ContentPage {
 			Title:         ``,
 			Description:   ``,
 			PublishedDate: ``,
-			templatingConf: TemplatingConf{
+			TemplatingConf: TemplatingConf{
 				``,
 				filepath.Join(templatesFolderPath, `privacy-imprint`),
 				`privacy-imprint`,
 				`privacy-imprint.html`,
 				`privacy-imprint`,
 				`privacy-imprint.html`},
+		},
+		{
+			BucketName:    ``,
+			Title:         ``,
+			Description:   ``,
+			PublishedDate: ``,
+			TemplatingConf: TemplatingConf{
+				``,
+				filepath.Join(templatesFolderPath, `rss`),
+				`rss`,
+				`feed.tpl`,
+				``,
+				`feed.xml`},
 		},
 	}
 }

@@ -51,7 +51,7 @@ func getSortedArticlePages(pages []ContentPage, sortedDesc bool) []ContentPage {
 }
 
 func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, templatesRoot string) ContentPack {
-	conf := page.templatingConf
+	conf := page.TemplatingConf
 	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
@@ -61,7 +61,12 @@ func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, temp
 	paths = append(paths, getPartialsPaths(templatesRoot)...)
 
 	var htmlString bytes.Buffer
-	t, _ := template.ParseFiles(paths...)
+	t, _ := template.New(conf.templateFileName).Funcs(template.FuncMap{
+		"ToRssDate": func(isoDate string) string {
+			return util.Iso8601ToRfc822Date(isoDate)
+		},
+	}).ParseFiles(paths...)
+
 	err := t.Execute(
 		&htmlString,
 		TemplateDataContext{
@@ -74,7 +79,7 @@ func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, temp
 	return ContentPack{
 		FolderName:  conf.resultFolderName,
 		HtmlContent: htmlString.String(),
-		FileName:    conf.resultFileName,
+		FileName:    conf.ResultFileName,
 		assets: collectAssets(
 			conf.assetFolderPath,
 			conf.resultFolderName),
