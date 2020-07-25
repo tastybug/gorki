@@ -10,7 +10,7 @@ import (
 
 func CreatePacks(contentPages []ContentPage) []ContentPack {
 	templatesDir := GetTemplatesRootDirectory()
-	pagesThatAreArticles := getPagesThatAreArticles(contentPages)
+	pagesThatAreArticles := getSortedArticlePages(contentPages, true)
 
 	var packs []ContentPack
 	for _, page := range contentPages {
@@ -32,14 +32,22 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func getPagesThatAreArticles(pages []ContentPage) []ContentPage {
-	var articlesOnly []ContentPage
+func getSortedArticlePages(pages []ContentPage, sortedDesc bool) []ContentPage {
+	articleMap := make(map[string]ContentPage)
+	var dateStrings []string
+	var sortedArticles []ContentPage
 	for _, page := range pages {
 		if page.isArticle {
-			articlesOnly = append(articlesOnly, page)
+			articleMap[page.PublishedDate] = page
+			dateStrings = append(dateStrings, page.PublishedDate)
 		}
 	}
-	return articlesOnly
+	dateStrings = util.SortStrings(dateStrings, sortedDesc)
+	for _, dateString := range dateStrings {
+		sortedArticles = append(sortedArticles, articleMap[dateString])
+	}
+
+	return sortedArticles
 }
 
 func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, templatesRoot string) ContentPack {

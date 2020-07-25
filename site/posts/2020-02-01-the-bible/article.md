@@ -1,6 +1,6 @@
 ---
 Title:The Bible
-PublishedDate: Gestern
+PublishedDate: 2020-02-01
 Description: So God said ..
 Draft: false
 ---
