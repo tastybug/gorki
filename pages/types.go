@@ -1,22 +1,25 @@
 package pages
 
-type ContentPage struct {
-	isDraft        bool
-	isArticle      bool
-	BucketName     string
-	Title          string
-	Description    string
-	PublishedDate  string
+type Page struct {
+	ArticleData    ArticleData
 	TemplatingConf TemplatingConf
+}
+
+type ArticleData struct {
+	isDraft       bool
+	BucketName    string
+	Title         string
+	Description   string
+	PublishedDate string
 }
 
 type TemplateDataContext struct {
 	// a list of all articles
-	AllArticles []ContentPage
+	AllArticles []Page
 	// how many articles there are
 	ArticleCount int
 	// this is the data of the template being built
-	LocalPage ContentPage
+	LocalPage Page
 }
 
 type TemplatingConf struct {

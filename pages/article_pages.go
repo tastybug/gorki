@@ -13,15 +13,15 @@ const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
-func CollectArticles() []ContentPage {
+func CollectArticles() []Page {
 	articlesRootPath := GetArticlesRootDirectory()
-	var articles []ContentPage
+	var articles []Page
 	for _, bucket := range util.ListDirectories(articlesRootPath) {
 		articlePath := filepath.Join(articlesRootPath, bucket.Name(), `article.md`)
 		if util.Exists(articlePath) {
-			article := assembleArticle(articlesRootPath, bucket.Name(), util.ReadFileContent(articlePath))
-			if !article.isDraft {
-				articles = append(articles, article)
+			page := assembleArticlePage(articlesRootPath, bucket.Name(), util.ReadFileContent(articlePath))
+			if !page.ArticleData.isDraft {
+				articles = append(articles, page)
 			}
 		} else {
 			log.Printf("Skipping article %s, no 'article.md' found in it.", bucket.Name())
@@ -30,7 +30,7 @@ func CollectArticles() []ContentPage {
 	return articles
 }
 
-func assembleArticle(articlesRootPath, bucketName, rawContent string) ContentPage {
+func assembleArticlePage(articlesRootPath, bucketName, rawContent string) Page {
 
 	metadata := util.ExtractGroup(rawContent, structurePattern, `meta`)
 	mdContent := util.ExtractGroup(rawContent, structurePattern, `content`)
@@ -39,13 +39,14 @@ func assembleArticle(articlesRootPath, bucketName, rawContent string) ContentPag
 	publishedDate := util.ExtractGroup(metadata, publishedDatePattern, `value`)
 	isDraft := IsDraft(bucketName, metadata)
 
-	return ContentPage{
-		isDraft:       isDraft,
-		isArticle:     true,
-		BucketName:    bucketName,
-		Title:         title,
-		Description:   description,
-		PublishedDate: publishedDate,
+	return Page{
+		ArticleData: ArticleData{
+			isDraft:       isDraft,
+			BucketName:    bucketName,
+			Title:         title,
+			Description:   description,
+			PublishedDate: publishedDate,
+		},
 		TemplatingConf: TemplatingConf{
 			string(markdown.ToHTML([]byte(mdContent), nil, nil)),
 			filepath.Join(articlesRootPath, bucketName),

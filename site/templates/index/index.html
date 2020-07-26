@@ -13,10 +13,10 @@
 <main>
 
     {{range .AllArticles}}
-        <h5>{{.Title}}</h5>
-        <small>🗓 {{.PublishedDate}}</small>
+        <h5>{{.ArticleData.Title}}</h5>
+        <small>🗓 {{.ArticleData.PublishedDate}}</small>
         <p>
-            {{.Description}} <a href="/{{.BucketName }}/article.html">More</a>
+            {{.ArticleData.Description}} <a href="/{{.ArticleData.BucketName }}/article.html">More</a>
         </p>
     {{end}}
 

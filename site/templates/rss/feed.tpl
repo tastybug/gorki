@@ -17,13 +17,13 @@
         </image>
         {{range .AllArticles}}
         <item>
-            <guid isPermaLink="false">{{.BucketName}}</guid>
-            <title>{{.Title}}</title>
+            <guid isPermaLink="false">{{.ArticleData.BucketName}}</guid>
+            <title>{{.ArticleData.Title}}</title>
             <description>
-                {{.Description}}
+                {{.ArticleData.Description}}
             </description>
-            <link>https://www.tastybug.com/{{.BucketName}}/{{.TemplatingConf.ResultFileName}}</link>
-            <pubDate>{{ToRssDate .PublishedDate}}</pubDate>
+            <link>https://www.tastybug.com/{{.ArticleData.BucketName}}/{{.TemplatingConf.ResultFileName}}</link>
+            <pubDate>{{ToRssDate .ArticleData.PublishedDate}}</pubDate>
         </item>
         {{end}}
     </channel>

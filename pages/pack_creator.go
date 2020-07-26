@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 )
 
-func CreatePacks(contentPages []ContentPage) []ContentPack {
+func CreatePacks(pages []Page) []ContentPack {
 	templatesDir := GetTemplatesRootDirectory()
-	pagesThatAreArticles := getSortedArticlePages(contentPages, true)
+	pagesThatAreArticles := getSortedArticlePages(pages, true)
 
 	var packs []ContentPack
-	for _, page := range contentPages {
+	for _, page := range pages {
 		packs = append(packs,
 			renderAndPackage(
 				page,
@@ -32,14 +32,14 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func getSortedArticlePages(pages []ContentPage, sortedDesc bool) []ContentPage {
-	articleMap := make(map[string]ContentPage)
+func getSortedArticlePages(pages []Page, sortedDesc bool) []Page {
+	articleMap := make(map[string]Page)
 	var dateStrings []string
-	var sortedArticles []ContentPage
+	var sortedArticles []Page
 	for _, page := range pages {
-		if page.isArticle {
-			articleMap[page.PublishedDate] = page
-			dateStrings = append(dateStrings, page.PublishedDate)
+		if page.ArticleData.PublishedDate != `` {
+			articleMap[page.ArticleData.PublishedDate] = page
+			dateStrings = append(dateStrings, page.ArticleData.PublishedDate)
 		}
 	}
 	dateStrings = util.SortStrings(dateStrings, sortedDesc)
@@ -50,7 +50,7 @@ func getSortedArticlePages(pages []ContentPage, sortedDesc bool) []ContentPage {
 	return sortedArticles
 }
 
-func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, templatesRoot string) ContentPack {
+func renderAndPackage(page Page, pagesThatAreArticles []Page, templatesRoot string) ContentPack {
 	conf := page.TemplatingConf
 	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
