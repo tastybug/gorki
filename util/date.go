@@ -4,10 +4,16 @@ import "time"
 
 const isoLayout = `2006-01-02`
 
-func Iso8601ToRfc822Date(isoDate string) string {
+func ISODateToRSSDateTime(isoDate string) string {
 	dateTime, err := time.Parse(isoLayout, isoDate)
 	PanicOnError(err)
 
-	// https://www.w3.org/Protocols/rfc822/#z28
-	return dateTime.Format(`02 Jan 06 15:04 UT`)
+	// RSS asks for RFC822 date formats, see https://www.w3.org/Protocols/rfc822/#z28
+	// nonetheless the RSS validator at https://validator.w3.org/feed/check.cgi asks for day of the week
+	// which you get with RC1123 only, so using this instead of the 822 formatter
+	return dateTime.Format(time.RFC1123Z)
+}
+
+func GetNowAsRSSDateTime() string {
+	return time.Now().Format(time.RFC1123Z)
 }

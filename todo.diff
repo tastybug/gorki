@@ -6,7 +6,7 @@
 + Generate a "Blog Posts Overview Page"
 - Generate a "Blog Posts Archive Page" / Simple Pagination
 - Generate a "Tags Page"
-- Generate RSS template
++ Generate RSS template
 + Introduce buckets for everything
 + draft flag in posts
 + chronologically ordered list of articles

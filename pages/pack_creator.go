@@ -63,7 +63,10 @@ func renderAndPackage(page ContentPage, pagesThatAreArticles []ContentPage, temp
 	var htmlString bytes.Buffer
 	t, _ := template.New(conf.templateFileName).Funcs(template.FuncMap{
 		"ToRssDate": func(isoDate string) string {
-			return util.Iso8601ToRfc822Date(isoDate)
+			return util.ISODateToRSSDateTime(isoDate)
+		},
+		"GetNowAsRSSDateTime": func() string {
+			return util.GetNowAsRSSDateTime()
 		},
 	}).ParseFiles(paths...)
 
