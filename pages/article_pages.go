@@ -37,7 +37,7 @@ func assembleArticlePage(articlesRootPath, bucketName, rawContent string) Page {
 	title := util.ExtractGroup(metadata, titlePattern, `value`)
 	description := util.ExtractGroup(metadata, descriptionPattern, `value`)
 	publishedDate := util.ExtractGroup(metadata, publishedDatePattern, `value`)
-	isDraft := IsDraft(bucketName, metadata)
+	isDraft := IsDraft(metadata)
 
 	return Page{
 		ArticleData: ArticleData{
@@ -57,14 +57,13 @@ func assembleArticlePage(articlesRootPath, bucketName, rawContent string) Page {
 	}
 }
 
-func IsDraft(bucketName, metadata string) bool {
+func IsDraft(metadata string) bool {
 	value := util.ExtractGroup(metadata, isDraftPattern, `value`)
 	if value == `false` {
 		return false
 	} else if value == `true` {
 		return true
 	} else {
-		log.Printf("WARNING: Bucket %s has missing or broken draft flag, assuming it is a draft.\n", bucketName)
 		return true
 	}
 }
