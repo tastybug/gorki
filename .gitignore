@@ -96,5 +96,6 @@ fabric.properties
 .idea/modules.xml
 .idea/vcs.xml
 bloggo
+bloggo_amd64
 
 target

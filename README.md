@@ -5,9 +5,8 @@ Open tasks are tracked in the [Todo File](./todo.diff).
 
 ### Development
 
-* `go test ./...` to run all tests recursively
-* `go build` builds the executable
-* `go run main.go` runs the `main.go` entry point function
+* `make`: Runs tests, builds the default binary.
+* `make all`: Runs tests, builds for local env and amd64, creates and pushes docker image.
 
 To aid development of the site, run a local webserver: 
 `docker run -d -p 8080:80 --name local-serve --rm -v $PWD/target:/var/www/html/website tastybug/dockerized-nginx-local-serve nginx`

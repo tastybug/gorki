@@ -1,5 +1,6 @@
 + Docker support
 + Local web server for development
++ Makeile to make things easier
 - CI
 - Document expected structure of a site, format of posts
 + Generate a "Blog Post as HTML"
