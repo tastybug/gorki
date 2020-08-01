@@ -1,8 +1,8 @@
 package pages
 
 import (
-	"bloggo/util"
 	"bufio"
+	"gorki/util"
 	"log"
 	"os"
 	"path/filepath"

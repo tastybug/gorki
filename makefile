@@ -2,7 +2,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
-BINARY_NAME=bloggo
+BINARY_NAME=gorki
 BINARY_UNIX=$(BINARY_NAME)_amd64
 
 default: clean test build
@@ -21,6 +21,6 @@ run:
 build-linux:
 	env GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v
 docker-build:
-	docker build -t "tastybug/bloggo" .
+	docker build -t "tastybug/gorki" .
 docker-push:
-	docker push "tastybug/bloggo"
+	docker push "tastybug/gorki"

@@ -1,8 +1,8 @@
 package pages
 
 import (
-	"bloggo/util"
 	"bytes"
+	"gorki/util"
 	"html/template"
 	"os"
 	"path/filepath"

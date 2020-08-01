@@ -90,12 +90,12 @@ fabric.properties
 # vendor/
 
 .idea/.gitignore
-.idea/bloggo.iml
+.idea/gorki.iml
 .idea/dictionaries/
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-bloggo
-bloggo_amd64
+gorki
+gorki_amd64
 
 target

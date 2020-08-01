@@ -1,4 +1,4 @@
-module bloggo
+module gorki
 
 go 1.14
 

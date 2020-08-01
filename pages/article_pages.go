@@ -1,8 +1,8 @@
 package pages
 
 import (
-	"bloggo/util"
 	"github.com/gomarkdown/markdown"
+	"gorki/util"
 	"log"
 	"path/filepath"
 )

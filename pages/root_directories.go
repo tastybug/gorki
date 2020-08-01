@@ -20,7 +20,7 @@ func GetSiteRootDirectory() string {
 			siteRootPath = os.Args[1]
 			log.Printf("Using site directory '%s'.", siteRootPath)
 		} else if len(os.Args) > 2 {
-			log.Printf("Usage: bloggo [path-to-site-directory]\n\nIf omitted, site is expected at $CWD/%s", defaultSiteDir)
+			log.Printf("Usage: gorki [path-to-site-directory]\n\nIf omitted, site is expected at $CWD/%s", defaultSiteDir)
 			os.Exit(0)
 		} else {
 			log.Printf("Using default site directory '%s'.", defaultSiteDir)

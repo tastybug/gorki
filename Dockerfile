@@ -1,6 +1,6 @@
 FROM golang:1.14-alpine3.12
 LABEL maintainer="tastybug@tastybug.com"
 RUN mkdir /app
-ADD ./bloggo_unix /app/
+ADD ./gorki_amd64 /app/
 WORKDIR /app
-CMD ["/app/bloggo"]
+CMD ["/app/gorki"]

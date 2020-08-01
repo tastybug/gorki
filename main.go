@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bloggo/pages"
-	"bloggo/util"
+	"gorki/pages"
+	"gorki/util"
 	"log"
 )
 

@@ -9,7 +9,7 @@ import (
 )
 
 func WriteToTempFile(content string) *os.File {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "bloggo-")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "gorki-")
 	PanicOnError(err)
 
 	fileWriter := bufio.NewWriter(tmpFile)
