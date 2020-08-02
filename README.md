@@ -1,4 +1,4 @@
-[Task Tracker](./todo.diff) | [Docker Hub](https://hub.docker.com/repository/docker/tastybug/gorki)
+![Travis](https://travis-ci.com/tastybug/gorki.svg?branch=master&status=unknown) | [Task Tracker](./todo.diff) | [Docker Hub](https://hub.docker.com/repository/docker/tastybug/gorki)
 
 # Gorki
 
