@@ -14,7 +14,7 @@ const descriptionPattern = `[d|D]escription: ?(?P<value>[\w. ]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
 func CollectArticles() []Page {
-	articlesRootPath := GetArticlesRootDirectory()
+	articlesRootPath := util.GetSettings().ArticlesRoot
 	var articles []Page
 	for _, bucket := range util.ListDirectories(articlesRootPath) {
 		articlePath := filepath.Join(articlesRootPath, bucket.Name(), `article.md`)

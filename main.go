@@ -7,11 +7,9 @@ import (
 )
 
 func main() {
-	siteDir := pages.GetSiteRootDirectory()
-	targetDir := pages.GetTargetRootDirectory()
-
-	log.Printf("Using site at '%s', target will be '%s'.", siteDir, targetDir)
-	util.PrepareTargetFolder(targetDir)
+	settings := util.GetSettings()
+	log.Printf("Reading from '%s', writing to '%s'.", settings.SiteRoot, settings.TargetRoot)
+	util.PrepareTargetFolder(settings.TargetRoot)
 
 	publishablePages := pages.CollectArticles()
 	publishablePages = append(publishablePages, pages.CollectMains()...)

@@ -9,15 +9,14 @@ import (
 )
 
 func PrepareTargetFolder(dir string) {
-	log.Printf("Preparing target folder '%s'.\n", dir)
 	if _, err := os.Stat(dir); err == nil {
+		log.Printf("Emptying target folder '%s'.\n", dir)
 		for _, toBeRemoved := range ListFilesAndDirs(dir) {
 			name := toBeRemoved.Name()
-			log.Println("Removing " + filepath.Join(dir, name) + " from target.")
 			PanicOnError(os.RemoveAll(filepath.Join(dir, name)))
 		}
 	} else {
-		log.Println("Creating non-existent target folder.")
+		log.Printf("Creating non-existent target folder '%s'.\n", dir)
 		err := os.Mkdir(dir, os.FileMode(0740))
 		PanicOnError(err)
 	}

@@ -1,9 +1,12 @@
 package pages
 
-import "path/filepath"
+import (
+	"gorki/util"
+	"path/filepath"
+)
 
 func CollectMains() []Page {
-	templatesFolderPath := GetTemplatesRootDirectory()
+	templatesFolderPath := util.GetSettings().TemplatesRoot
 	return []Page{
 		{
 			TemplatingConf: TemplatingConf{

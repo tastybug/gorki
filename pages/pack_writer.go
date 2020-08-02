@@ -9,7 +9,7 @@ import (
 )
 
 func WriteContentPack(pack ContentPack) {
-	targetDir := GetTargetRootDirectory()
+	targetDir := util.GetSettings().TargetRoot
 	if pack.FolderName != `` {
 		util.CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))
 	}
