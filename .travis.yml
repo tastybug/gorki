@@ -3,4 +3,4 @@ language: go
 go:
   - "1.14.5"
 
-script: make all
+script: make
