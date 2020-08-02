@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine3.12
+FROM alpine:3
 LABEL maintainer="tastybug@tastybug.com"
 RUN mkdir /app
 ADD ./gorki_amd64 /app/gorki
