@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func CreatePacks(pages []Page) []ContentPack {
+func CreatePacks(settings util.Settings, pages []Page) []ContentPack {
 	pagesThatAreArticles := getSortedArticlePages(pages, true)
 
 	var packs []ContentPack
@@ -17,7 +17,7 @@ func CreatePacks(pages []Page) []ContentPack {
 			renderAndPackage(
 				page,
 				pagesThatAreArticles,
-				util.GetSettings().TemplatesRoot),
+				settings.TemplatesRoot),
 		)
 	}
 	return packs

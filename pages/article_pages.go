@@ -13,8 +13,56 @@ const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 const descriptionPattern = `[d|D]escription: ?(?P<value>[\w.,; ]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
-func CollectArticles() []Page {
-	articlesRootPath := util.GetSettings().ArticlesRoot
+func collectPages(settings util.Settings) []Page {
+	pages := collectArticles(settings)
+	pages = append(pages, collectMains(settings)...)
+	return pages
+}
+
+func collectMains(settings util.Settings) []Page {
+	templatesFolderPath := settings.TemplatesRoot
+	return []Page{
+		{
+			TemplatingConf: TemplatingConf{
+				``,
+				filepath.Join(templatesFolderPath, `index`),
+				`index`,
+				`index.html`,
+				``,
+				`index.html`},
+		},
+		{
+			TemplatingConf: TemplatingConf{
+				``,
+				filepath.Join(templatesFolderPath, `about`),
+				`about`,
+				`about.html`,
+				`about`,
+				`about.html`},
+		},
+		{
+			TemplatingConf: TemplatingConf{
+				``,
+				filepath.Join(templatesFolderPath, `privacy-imprint`),
+				`privacy-imprint`,
+				`privacy-imprint.html`,
+				`privacy-imprint`,
+				`privacy-imprint.html`},
+		},
+		{
+			TemplatingConf: TemplatingConf{
+				``,
+				filepath.Join(templatesFolderPath, `rss`),
+				`rss`,
+				`feed.tpl`,
+				``,
+				`feed.xml`},
+		},
+	}
+}
+
+func collectArticles(settings util.Settings) []Page {
+	articlesRootPath := settings.ArticlesRoot
 	var articles []Page
 	for _, bucket := range util.ListDirectories(articlesRootPath) {
 		articlePath := filepath.Join(articlesRootPath, bucket.Name(), `article.md`)
