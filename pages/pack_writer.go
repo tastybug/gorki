@@ -15,7 +15,7 @@ func WriteContentPack(pack ContentPack) {
 	}
 	f, err := os.Create(filepath.Join(targetDir, pack.FolderName, pack.FileName))
 	util.PanicOnError(err)
-	defer f.Close()
+	defer util.CloseFile(*f)
 	fileWriter := bufio.NewWriter(f)
 	_, err = fileWriter.Write([]byte(pack.HtmlContent))
 	util.PanicOnError(err)

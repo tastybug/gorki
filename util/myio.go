@@ -56,7 +56,7 @@ func ReadFileContent(path string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer CloseFile(*file)
 
 	scanner := bufio.NewScanner(file)
 	var content string
@@ -79,7 +79,7 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 func CopyFile(sourcePath, destinationPath string) {
 	in, err := os.Open(sourcePath)
 	PanicOnError(err)
-	defer in.Close()
+	defer CloseFile(*in)
 
 	out, err := os.Create(destinationPath)
 	PanicOnError(err)
@@ -98,4 +98,9 @@ func Exists(path string) bool {
 		return false
 	}
 	return false
+}
+
+func CloseFile(f os.File) {
+	err := f.Close()
+	PanicOnError(err)
 }
