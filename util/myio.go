@@ -104,3 +104,8 @@ func CloseFile(f os.File) {
 	err := f.Close()
 	PanicOnError(err)
 }
+
+func RemoveFile(f os.File) {
+	err := os.Remove(f.Name())
+	PanicOnError(err)
+}

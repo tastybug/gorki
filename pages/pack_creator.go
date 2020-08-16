@@ -55,7 +55,7 @@ func renderAndPackage(page Page, pagesThatAreArticles []Page, templatesRoot stri
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
 		paths = append(paths, extraContentTemplate.Name())
-		defer os.Remove(extraContentTemplate.Name())
+		defer util.RemoveFile(*extraContentTemplate)
 	}
 	paths = append(paths, getPartialsPaths(templatesRoot)...)
 
