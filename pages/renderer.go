@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 )
 
-func CreatePacks(settings util.Settings, pages []Page) []ContentPack {
+func RenderPages(settings util.Settings, pages []page) []renderedPage {
 	pagesThatAreArticles := getSortedArticlePages(pages, true)
 
-	var packs []ContentPack
+	var packs []renderedPage
 	for _, page := range pages {
 		packs = append(packs,
 			renderAndPackage(
@@ -31,10 +31,10 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func getSortedArticlePages(pages []Page, sortedDesc bool) []Page {
-	articleMap := make(map[string]Page)
+func getSortedArticlePages(pages []page, sortedDesc bool) []page {
+	articleMap := make(map[string]page)
 	var dateStrings []string
-	var sortedArticles []Page
+	var sortedArticles []page
 	for _, page := range pages {
 		if page.ArticleData.PublishedDate != `` {
 			articleMap[page.ArticleData.PublishedDate] = page
@@ -49,7 +49,7 @@ func getSortedArticlePages(pages []Page, sortedDesc bool) []Page {
 	return sortedArticles
 }
 
-func renderAndPackage(page Page, pagesThatAreArticles []Page, templatesRoot string) ContentPack {
+func renderAndPackage(page page, pagesThatAreArticles []page, templatesRoot string) renderedPage {
 	conf := page.TemplatingConf
 	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
@@ -71,14 +71,14 @@ func renderAndPackage(page Page, pagesThatAreArticles []Page, templatesRoot stri
 
 	err := t.Execute(
 		&htmlString,
-		TemplateDataContext{
+		templateDataContext{
 			AllArticles:  pagesThatAreArticles,
 			ArticleCount: len(pagesThatAreArticles),
 			LocalPage:    page,
 		})
 	util.PanicOnError(err)
 
-	return ContentPack{
+	return renderedPage{
 		FolderName:  conf.resultFolderName,
 		HtmlContent: htmlString.String(),
 		FileName:    conf.ResultFileName,
@@ -92,11 +92,11 @@ func createContentTemplate(content string) *os.File {
 	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
 }
 
-func collectAssets(assetFolderPath, resultFolderName string) []Asset {
-	var assets []Asset
+func collectAssets(assetFolderPath, resultFolderName string) []asset {
+	var assets []asset
 	for _, assetFile := range util.ListFilesMatching(assetFolderPath, `.*\.[^mdhtml]+`) {
 		assets = append(assets,
-			Asset{FileName: assetFile.Name(),
+			asset{FileName: assetFile.Name(),
 				FolderName:   resultFolderName,
 				CopyFromPath: filepath.Join(assetFolderPath, assetFile.Name())})
 	}
@@ -105,4 +105,26 @@ func collectAssets(assetFolderPath, resultFolderName string) []Asset {
 	} else {
 		return nil
 	}
+}
+
+type templateDataContext struct {
+	// a list of all articles
+	AllArticles []page
+	// how many articles there are
+	ArticleCount int
+	// this is the data of the template being built
+	LocalPage page
+}
+
+type renderedPage struct {
+	FolderName  string
+	FileName    string
+	HtmlContent string
+	assets      []asset
+}
+
+type asset struct {
+	FolderName   string
+	FileName     string
+	CopyFromPath string
 }

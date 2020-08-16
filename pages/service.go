@@ -8,7 +8,7 @@ import (
 func Build(settings util.Settings) {
 	publishablePages := collectPages(settings)
 
-	for _, pack := range CreatePacks(settings, publishablePages) {
+	for _, pack := range RenderPages(settings, publishablePages) {
 		log.Printf("Writing page %s\n", pack.FileName)
 		WriteContentPack(settings, pack)
 		log.Println("Done")

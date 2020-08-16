@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func WriteContentPack(settings util.Settings, pack ContentPack) {
+func WriteContentPack(settings util.Settings, pack renderedPage) {
 	targetDir := settings.TargetRoot
 	if pack.FolderName != `` {
 		util.CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))
@@ -27,7 +27,7 @@ func WriteContentPack(settings util.Settings, pack ContentPack) {
 	}
 }
 
-func writeAsset(targetRoot string, asset Asset) {
+func writeAsset(targetRoot string, asset asset) {
 	log.Printf("Writing asset %s\n", asset.CopyFromPath)
 	var writeToPath string
 	if asset.FolderName != `` {
