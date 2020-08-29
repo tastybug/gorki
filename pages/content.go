@@ -29,9 +29,11 @@ func collectArticles(settings util.Settings) []page {
 			if !page.ArticleData.IsDraft {
 				log.Printf("Picking up article '%s' at '%s'", page.ArticleData.Title, articlePath)
 				articles = append(articles, page)
+			} else {
+				log.Printf("Skipping draft article '%s.'", bucket.Name())
 			}
 		} else {
-			log.Printf("Skipping article %s, no 'article.md' found in it.", bucket.Name())
+			log.Printf("Skipping article '%s', no 'article.md' found in it.", bucket.Name())
 		}
 	}
 	return articles
@@ -45,6 +47,9 @@ func assembleArticlePage(articlesRootPath, bucketName, rawContent string) page {
 	description := util.ExtractGroup(metadata, descriptionPattern, `value`)
 	publishedDate := util.ExtractGroup(metadata, publishedDatePattern, `value`)
 	isDraft := isDraft(metadata)
+
+	log.Printf("Found article '%s': title: '%s', description: '%s', published on: '%s'",
+		bucketName, title, description, publishedDate)
 
 	return page{
 		ArticleData: articleData{
