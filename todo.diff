@@ -1,3 +1,4 @@
+- idea: right now I have to push gorki images manually to docker hub. I can utilize their automated build infra by building gorki inside Dockerfile
 + Dockerize gorki
 + Local web server for development
 + Makefile to make things easier
