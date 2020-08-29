@@ -5,16 +5,20 @@ GOTEST=$(GOCMD) test
 BASE_BINARY_NAME=gorki
 BINARY_UNIX=$(BASE_BINARY_NAME)_amd64
 
-default: clean test compile install
-push: clean  test compile install docker-push
-clean:
+# using maven lifecycle terminology here
+clean: __clean
+package: clean __test __build_binary
+install: package __build_docker_image
+deploy: package __push_docker_image_to_hub
+
+__clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_UNIX)
-test:
+__test:
 	$(GOTEST) -v ./...
-compile:
+__build_binary:
 	env GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v
-install:
+__build_docker_image:
 	docker build -t "tastybug/gorki" .
-docker-push:
+__push_docker_image_to_hub:
 	docker push "tastybug/gorki"
