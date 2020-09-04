@@ -10,7 +10,7 @@ BINARY_UNIX=$(BASE_BINARY_NAME)_amd64
 clean: __clean
 package: clean __test __build_binary
 install: package __build_docker_image
-deploy: package __push_docker_image_to_hub
+deploy: install __push_docker_image_to_hub
 
 __clean:
 	$(GOCLEAN)
