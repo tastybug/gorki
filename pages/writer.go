@@ -28,7 +28,7 @@ func WriteContentPack(settings util.Settings, pack renderedPage) {
 }
 
 func writeAsset(targetRoot string, asset asset) {
-	log.Printf("Writing asset %s\n", asset.CopyFromPath)
+	log.Printf("Writing asset %s/%s\n", asset.FolderName, asset.FileName)
 	var writeToPath string
 	if asset.FolderName != `` {
 		writeToPath = filepath.Join(targetRoot, asset.FolderName, asset.FileName)
