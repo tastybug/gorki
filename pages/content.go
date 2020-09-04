@@ -48,8 +48,8 @@ func assembleArticlePage(articlesRootPath, bucketName, rawContent string) page {
 	publishedDate := util.ExtractGroup(metadata, publishedDatePattern, `value`)
 	isDraft := isDraft(metadata)
 
-	log.Printf("Found article '%s': title: '%s', description: '%s', published on: '%s'",
-		bucketName, title, description, publishedDate)
+	log.Printf("Found article '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: '%t'",
+		bucketName, title, description, publishedDate, isDraft)
 
 	return page{
 		ArticleData: articleData{
