@@ -1,6 +1,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
+GOINSTALL=$(GOCMD) install
 GOTEST=$(GOCMD) test
 BASE_BINARY_NAME=gorki
 BINARY_UNIX=$(BASE_BINARY_NAME)_amd64
@@ -18,6 +19,7 @@ __test:
 	$(GOTEST) -v ./...
 __build_binary:
 	env GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v
+	$(GOINSTALL)
 __build_docker_image:
 	docker build -t "tastybug/gorki" .
 __push_docker_image_to_hub:
