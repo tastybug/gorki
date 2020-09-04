@@ -117,7 +117,7 @@ func collectMains(settings util.Settings) []page {
 				`rss`,
 				`feed.tpl`,
 				``,
-				`feed.xml`},
+				`rss.xml`},
 		},
 	}
 }
