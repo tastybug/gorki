@@ -6,8 +6,8 @@ Gorki is a simple, opinionated static site generator written in Go. It allows yo
 
 ### Development
 
-* `make`: Runs tests, builds the default binary.
-* `make all`: Runs tests, builds for local env and amd64, creates and pushes docker image.
+* `make package` runs tests, builds the default binary.
+* `make deploy` runs tests, builds for local env and amd64, creates and pushes docker image.
 
 To aid development of the site, run a local webserver: 
 ```shell script

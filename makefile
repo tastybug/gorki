@@ -7,8 +7,8 @@ BASE_BINARY_NAME=gorki
 BINARY_UNIX=$(BASE_BINARY_NAME)_amd64
 
 # using maven lifecycle terminology here
-clean: __clean
 package: clean __test __build_binary
+clean: __clean
 install: package __build_docker_image
 deploy: install __push_docker_image_to_hub
 
