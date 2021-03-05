@@ -9,7 +9,7 @@ import (
 func main() {
 	settings := util.GetSettings()
 	log.Printf("Reading from '%s', writing to '%s'.", settings.SiteRoot, settings.TargetRoot)
-	util.PrepareTargetFolder(settings.TargetRoot)
+	util.CreateOrPurgeTargetFolder(settings.TargetRoot)
 
 	pages.Build(settings)
 

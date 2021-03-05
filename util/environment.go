@@ -8,7 +8,7 @@ import (
 	"runtime"
 )
 
-func PrepareTargetFolder(dir string) {
+func CreateOrPurgeTargetFolder(dir string) {
 	if _, err := os.Stat(dir); err == nil {
 		log.Printf("Emptying target folder '%s'.\n", dir)
 		for _, toBeRemoved := range ListFilesAndDirs(dir) {
