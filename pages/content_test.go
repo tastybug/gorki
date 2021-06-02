@@ -1,19 +1,16 @@
 package pages
 
-import "testing"
-import "fmt"
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestIsDraft(t *testing.T) {
 
-	if isDraft(`---\nDraft: false\n---`) != false {
-		t.Error("Did not see that draft was declared FALSE")
-	}
-	if isDraft(`---\nDraft: true\n---`) != true {
-		t.Error("Did not see that draft was declared TRUE")
-	}
-	if isDraft(``) != true {
-		t.Error("Unless specifically set otherwise, an article is supposed to be a draft")
-	}
+	assert.False(t, isDraft(`---\nDraft: false\n---`), "Did not see that draft was declared FALSE")
+	assert.True(t, isDraft(`---\nDraft: true\n---`), "Did not see that draft was declared TRUE")
+	assert.True(t, isDraft(``), "Unless specifically set otherwise, an article is supposed to be a draft")
 }
 
 func TestReadTitle(t *testing.T) {
@@ -22,9 +19,7 @@ func TestReadTitle(t *testing.T) {
 
 	actual := readTitle(input)
 
-	if actual != expected {
-		t.Error(fmt.Printf("Expecting '%s', got '%s'", expected, actual))
-	}
+	assert.Equal(t, expected, actual)
 }
 
 func TestReadPublishedDate(t *testing.T) {
@@ -33,9 +28,7 @@ func TestReadPublishedDate(t *testing.T) {
 
 	actual := readPublishedDate(input)
 
-	if actual != expected {
-		t.Error(fmt.Printf("Expecting '%s', got '%s'", expected, actual))
-	}
+	assert.Equal(t, expected, actual)
 }
 
 func TestReadDescription(t *testing.T) {
@@ -44,7 +37,5 @@ func TestReadDescription(t *testing.T) {
 
 	actual := readDescription(input)
 
-	if actual != expected {
-		t.Error(fmt.Printf("Expecting '%s', got '%s'", expected, actual))
-	}
+	assert.Equal(t, expected, actual)
 }
