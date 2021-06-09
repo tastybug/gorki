@@ -32,7 +32,7 @@ func TestReadPublishedDate(t *testing.T) {
 }
 
 func TestReadDescription(t *testing.T) {
-	expected := `You can't and won't and ? and & and * and !""`
+	expected := `To aid my Terraform learning sessions, I wanted the equivalent of a "Hello World" project. A basic canvas to experiment with. A canvas that is bare-bone, covers the whole lifecycle from setup to teardown and employs AWS to make it a bit more exciting that plain "Hello World".`
 	input := fmt.Sprintf("---\nDescription: %s\n---\nContent", expected)
 
 	actual := readDescription(input)
