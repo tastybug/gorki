@@ -8,9 +8,9 @@ import (
 )
 
 const structurePattern = "-{3}(?P<meta>[*&?/'\\-\\s\\w.,;:\\(\\)\\[\\]!]+)-{3}(?P<content>[$|^\\s\\w.;=&{}\\\\%:_\"'\\*.#,\\-!\\[\\]\\(\\)\\/<>?`]+)"
-const titlePattern = `[t|T]itle: ?(?P<value>[\w.,; &?*]*)`
+const titlePattern = `[t|T]itle: ?(?P<value>[\w.,; &?*"]*)`
 const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
-const descriptionPattern = `[d|D]escription: ?(?P<value>[&!?\/'\(\)\[\]\w.,; *]*)`
+const descriptionPattern = `[d|D]escription: ?(?P<value>[&!?\/'\(\)\[\]\w.,; *"]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
 func collectPages(settings util.Settings) []page {

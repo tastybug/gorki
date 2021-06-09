@@ -14,7 +14,7 @@ func TestIsDraft(t *testing.T) {
 }
 
 func TestReadTitle(t *testing.T) {
-	expected := `Some title &?.,;*`
+	expected := `Some title &?.,;*"`
 	input := fmt.Sprintf("---\nTitle: %s\n---\nContent", expected)
 
 	actual := readTitle(input)
@@ -32,7 +32,7 @@ func TestReadPublishedDate(t *testing.T) {
 }
 
 func TestReadDescription(t *testing.T) {
-	expected := `You can't and won't and ? and & and * and !`
+	expected := `You can't and won't and ? and & and * and !""`
 	input := fmt.Sprintf("---\nDescription: %s\n---\nContent", expected)
 
 	actual := readDescription(input)
