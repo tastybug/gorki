@@ -1,8 +1,12 @@
 package util
 
-import "regexp"
+import (
+	"errors"
+	"fmt"
+	"regexp"
+)
 
-func ExtractGroup(data string, pattern string, groupName string) string {
+func ExtractGroupOrFailOnMismatch(data string, pattern string, groupName string) string {
 
 	r := regexp.MustCompile(pattern)
 	result := r.FindStringSubmatch(data)
@@ -12,7 +16,7 @@ func ExtractGroup(data string, pattern string, groupName string) string {
 			return result[index]
 		}
 	}
-	return ``
+	panic(errors.New(fmt.Sprintf("No match for group '%s' in pattern '%s':\n%s.", groupName, pattern, data)))
 }
 
 func matches(data, pattern string) bool {

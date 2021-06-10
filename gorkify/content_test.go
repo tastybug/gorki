@@ -10,7 +10,6 @@ func TestIsDraft(t *testing.T) {
 
 	assert.False(t, isDraft(`---\nDraft: false\n---`), "Did not see that draft was declared FALSE")
 	assert.True(t, isDraft(`---\nDraft: true\n---`), "Did not see that draft was declared TRUE")
-	assert.True(t, isDraft(``), "Unless specifically set otherwise, an article is supposed to be a draft")
 }
 
 func TestReadTitle(t *testing.T) {

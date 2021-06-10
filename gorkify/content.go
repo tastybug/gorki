@@ -27,7 +27,7 @@ func collectArticleBundles(settings util.Settings) []bundle {
 		if util.Exists(articlePath) {
 			page := assembleArticlePage(articlesRootPath, bundle.Name(), util.ReadFileContent(articlePath))
 			if !page.ArticleData.IsDraft {
-				log.Printf("Picking up article '%s' at '%s'", page.ArticleData.Title, articlePath)
+				log.Printf("Proceeding with non-draft article '%s' at '%s'", page.ArticleData.Title, articlePath)
 				bundles = append(bundles, page)
 			} else {
 				log.Printf("Skipping draft article '%s.'", bundle.Name())
@@ -48,7 +48,7 @@ func assembleArticlePage(articlesRootPath, bundleName, rawContent string) bundle
 	publishedDate := readPublishedDate(metadata)
 	isDraft := isDraft(metadata)
 
-	log.Printf("Found bundle '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: '%t'",
+	log.Printf("Found bundle '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: %t",
 		bundleName, title, description, publishedDate, isDraft)
 
 	return bundle{
@@ -70,27 +70,27 @@ func assembleArticlePage(articlesRootPath, bundleName, rawContent string) bundle
 }
 
 func readPublishedDate(input string) string {
-	return util.ExtractGroup(input, publishedDatePattern, `value`)
+	return util.ExtractGroupOrFailOnMismatch(input, publishedDatePattern, `value`)
 }
 
 func readDescription(input string) string {
-	return util.ExtractGroup(input, descriptionPattern, `value`)
+	return util.ExtractGroupOrFailOnMismatch(input, descriptionPattern, `value`)
 }
 
 func readTitle(input string) string {
-	return util.ExtractGroup(input, titlePattern, `value`)
+	return util.ExtractGroupOrFailOnMismatch(input, titlePattern, `value`)
 }
 
 func readContentBlock(input string) string {
-	return util.ExtractGroup(input, structurePattern, `content`)
+	return util.ExtractGroupOrFailOnMismatch(input, structurePattern, `content`)
 }
 
 func readMetadataBlock(input string) string {
-	return util.ExtractGroup(input, structurePattern, `meta`)
+	return util.ExtractGroupOrFailOnMismatch(input, structurePattern, `meta`)
 }
 
 func isDraft(input string) bool {
-	value := util.ExtractGroup(input, isDraftPattern, `value`)
+	value := util.ExtractGroupOrFailOnMismatch(input, isDraftPattern, `value`)
 	if value == `false` {
 		return false
 	} else if value == `true` {
