@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gorki/pages"
+	"gorki/gorkify"
 	"gorki/util"
 	"log"
 )
@@ -11,7 +11,7 @@ func main() {
 	log.Printf("Reading from '%s', writing to '%s'.", settings.SiteRoot, settings.TargetRoot)
 	util.CreateOrPurgeTargetFolder(settings.TargetRoot)
 
-	pages.Build(settings)
+	gorkify.Gorkify(settings)
 
 	util.PrintMemUsage()
 }

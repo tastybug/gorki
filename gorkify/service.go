@@ -1,15 +1,15 @@
-package pages
+package gorkify
 
 import (
 	"gorki/util"
 	"log"
 )
 
-func Build(settings util.Settings) {
+func Gorkify(settings util.Settings) {
 	publishablePages := collectPages(settings)
 
 	for _, pack := range RenderPages(settings, publishablePages) {
-		log.Printf("Writing page %s/%s\n", pack.FolderName, pack.FileName)
+		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
 		WriteContentPack(settings, pack)
 	}
 

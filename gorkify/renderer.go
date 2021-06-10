@@ -1,4 +1,4 @@
-package pages
+package gorkify
 
 import (
 	"bytes"
@@ -8,19 +8,19 @@ import (
 	"path/filepath"
 )
 
-func RenderPages(settings util.Settings, pages []page) []renderedPage {
-	pagesThatAreArticles := getSortedArticlePages(pages, true)
+func RenderPages(settings util.Settings, bundles []bundle) []renderedPage {
+	articleBundles := filterArticlesAndSortByDate(bundles, true)
 
-	var packs []renderedPage
-	for _, page := range pages {
-		packs = append(packs,
+	var pages []renderedPage
+	for _, bundle := range bundles {
+		pages = append(pages,
 			renderAndPackage(
-				page,
-				pagesThatAreArticles,
+				bundle,
+				articleBundles,
 				settings.TemplatesRoot),
 		)
 	}
-	return packs
+	return pages
 }
 
 func getPartialsPaths(templatesDir string) []string {
@@ -31,11 +31,11 @@ func getPartialsPaths(templatesDir string) []string {
 	}
 }
 
-func getSortedArticlePages(pages []page, sortedDesc bool) []page {
-	articleMap := make(map[string]page)
+func filterArticlesAndSortByDate(bundles []bundle, sortedDesc bool) []bundle {
+	articleMap := make(map[string]bundle)
 	var dateStrings []string
-	var sortedArticles []page
-	for _, page := range pages {
+	var sortedArticles []bundle
+	for _, page := range bundles {
 		if page.ArticleData.PublishedDate != `` {
 			articleMap[page.ArticleData.PublishedDate] = page
 			dateStrings = append(dateStrings, page.ArticleData.PublishedDate)
@@ -49,7 +49,7 @@ func getSortedArticlePages(pages []page, sortedDesc bool) []page {
 	return sortedArticles
 }
 
-func renderAndPackage(page page, pagesThatAreArticles []page, templatesRoot string) renderedPage {
+func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot string) renderedPage {
 	conf := page.TemplatingConf
 	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
@@ -109,11 +109,11 @@ func collectAssets(assetFolderPath, resultFolderName string) []asset {
 
 type templateDataContext struct {
 	// a list of all articles
-	AllArticles []page
+	AllArticles []bundle
 	// how many articles there are
 	ArticleCount int
 	// this is the data of the template being built
-	LocalPage page
+	LocalPage bundle
 }
 
 type renderedPage struct {

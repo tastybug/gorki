@@ -1,4 +1,4 @@
-package pages
+package gorkify
 
 import (
 	"github.com/gomarkdown/markdown"
@@ -13,33 +13,33 @@ const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 const descriptionPattern = `[d|D]escription: ?(?P<value>[&!?\/'\(\)\[\]\w.,; *\"-]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
-func collectPages(settings util.Settings) []page {
-	pages := collectArticles(settings)
-	pages = append(pages, collectMains(settings)...)
+func collectPages(settings util.Settings) []bundle {
+	pages := collectArticleBundles(settings)
+	pages = append(pages, collectStaticBundles(settings)...)
 	return pages
 }
 
-func collectArticles(settings util.Settings) []page {
+func collectArticleBundles(settings util.Settings) []bundle {
 	articlesRootPath := settings.ArticlesRoot
-	var articles []page
-	for _, bucket := range util.ListDirectories(articlesRootPath) {
-		articlePath := filepath.Join(articlesRootPath, bucket.Name(), `article.md`)
+	var bundles []bundle
+	for _, bundle := range util.ListDirectories(articlesRootPath) {
+		articlePath := filepath.Join(articlesRootPath, bundle.Name(), `article.md`)
 		if util.Exists(articlePath) {
-			page := assembleArticlePage(articlesRootPath, bucket.Name(), util.ReadFileContent(articlePath))
+			page := assembleArticlePage(articlesRootPath, bundle.Name(), util.ReadFileContent(articlePath))
 			if !page.ArticleData.IsDraft {
 				log.Printf("Picking up article '%s' at '%s'", page.ArticleData.Title, articlePath)
-				articles = append(articles, page)
+				bundles = append(bundles, page)
 			} else {
-				log.Printf("Skipping draft article '%s.'", bucket.Name())
+				log.Printf("Skipping draft article '%s.'", bundle.Name())
 			}
 		} else {
-			log.Printf("Skipping article '%s', no 'article.md' found in it.", bucket.Name())
+			log.Printf("Skipping bundle '%s', no 'article.md' found.", bundle.Name())
 		}
 	}
-	return articles
+	return bundles
 }
 
-func assembleArticlePage(articlesRootPath, bucketName, rawContent string) page {
+func assembleArticlePage(articlesRootPath, bundleName, rawContent string) bundle {
 
 	metadata := readMetadataBlock(rawContent)
 	mdContent := readContentBlock(rawContent)
@@ -48,23 +48,23 @@ func assembleArticlePage(articlesRootPath, bucketName, rawContent string) page {
 	publishedDate := readPublishedDate(metadata)
 	isDraft := isDraft(metadata)
 
-	log.Printf("Found article '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: '%t'",
-		bucketName, title, description, publishedDate, isDraft)
+	log.Printf("Found bundle '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: '%t'",
+		bundleName, title, description, publishedDate, isDraft)
 
-	return page{
+	return bundle{
 		ArticleData: articleData{
 			IsDraft:       isDraft,
-			BucketName:    bucketName,
+			BucketName:    bundleName,
 			Title:         title,
 			Description:   description,
 			PublishedDate: publishedDate,
 		},
 		TemplatingConf: templatingConf{
 			string(markdown.ToHTML([]byte(mdContent), nil, nil)),
-			filepath.Join(articlesRootPath, bucketName),
+			filepath.Join(articlesRootPath, bundleName),
 			`blogpost`,
 			`blogpost.html`,
-			bucketName,
+			bundleName,
 			`article.html`},
 	}
 }
@@ -100,9 +100,9 @@ func isDraft(input string) bool {
 	}
 }
 
-func collectMains(settings util.Settings) []page {
+func collectStaticBundles(settings util.Settings) []bundle {
 	templatesFolderPath := settings.TemplatesRoot
-	return []page{
+	return []bundle{
 		{
 			TemplatingConf: templatingConf{
 				``,
@@ -142,7 +142,7 @@ func collectMains(settings util.Settings) []page {
 	}
 }
 
-type page struct {
+type bundle struct {
 	ArticleData    articleData    // used in template
 	TemplatingConf templatingConf // used in template
 }
