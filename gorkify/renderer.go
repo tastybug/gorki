@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func RenderPages(settings util.Settings, bundles []bundle) []renderedPage {
+func renderPages(settings util.Settings, bundles []bundle) []renderedPage {
 	articleBundles := filterArticlesAndSortByDate(bundles, true)
 
 	var pages []renderedPage

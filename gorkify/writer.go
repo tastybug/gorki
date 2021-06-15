@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func WriteContentPack(settings util.Settings, pack renderedPage) {
+func writeContentPack(settings util.Settings, pack renderedPage) {
 	targetDir := settings.TargetRoot
 	if pack.FolderName != `` {
 		util.CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))

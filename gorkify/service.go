@@ -8,9 +8,9 @@ import (
 func Gorkify(settings util.Settings) {
 	publishablePages := collectPages(settings)
 
-	for _, pack := range RenderPages(settings, publishablePages) {
+	for _, pack := range renderPages(settings, publishablePages) {
 		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
-		WriteContentPack(settings, pack)
+		writeContentPack(settings, pack)
 	}
 
 	log.Println("Finished generation.")
