@@ -6,7 +6,7 @@ import (
 )
 
 func Gorkify(settings util.Settings) {
-	publishablePages := collectPages(settings)
+	publishablePages := collectAllBundles(settings)
 
 	for _, pack := range renderPages(settings, publishablePages) {
 		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)

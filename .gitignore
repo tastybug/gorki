@@ -99,3 +99,5 @@ gorki
 gorki_amd64
 
 target
+
+.code-workspace
