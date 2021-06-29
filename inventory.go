@@ -1,24 +1,23 @@
-package gorkify
+package main
 
 import (
-	"gorki/util"
 	"log"
 	"path/filepath"
 )
 
-func collectAllBundles(settings util.Settings) []bundle {
+func collectAllBundles(settings Settings) []bundle {
 	pages := collectArticleBundles(settings)
 	pages = append(pages, collectStaticBundles(settings)...)
 	return pages
 }
 
-func collectArticleBundles(settings util.Settings) []bundle {
+func collectArticleBundles(settings Settings) []bundle {
 	articlesRootPath := settings.ArticlesRoot
 	var bundles []bundle
-	for _, bundle := range util.ListDirectories(articlesRootPath) {
+	for _, bundle := range ListDirectories(articlesRootPath) {
 		articlePath := filepath.Join(articlesRootPath, bundle.Name(), `article.md`)
-		if util.Exists(articlePath) {
-			page := newBundle(articlesRootPath, bundle.Name(), util.ReadFileContent(articlePath))
+		if Exists(articlePath) {
+			page := newBundle(articlesRootPath, bundle.Name(), ReadFileContent(articlePath))
 			if !page.ArticleData.IsDraft {
 				log.Printf("Proceeding with non-draft article '%s' at '%s'", page.ArticleData.Title, articlePath)
 				bundles = append(bundles, page)
@@ -32,7 +31,7 @@ func collectArticleBundles(settings util.Settings) []bundle {
 	return bundles
 }
 
-func collectStaticBundles(settings util.Settings) []bundle {
+func collectStaticBundles(settings Settings) []bundle {
 	templatesFolderPath := settings.TemplatesRoot
 	return []bundle{
 		{

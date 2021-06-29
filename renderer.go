@@ -1,14 +1,13 @@
-package gorkify
+package main
 
 import (
 	"bytes"
-	"gorki/util"
 	"html/template"
 	"os"
 	"path/filepath"
 )
 
-func renderPages(settings util.Settings, bundles []bundle) []renderedPage {
+func renderPages(settings Settings, bundles []bundle) []renderedPage {
 	articleBundles := filterArticlesAndSortByDate(bundles, true)
 
 	var pages []renderedPage
@@ -41,7 +40,7 @@ func filterArticlesAndSortByDate(bundles []bundle, sortedDesc bool) []bundle {
 			dateStrings = append(dateStrings, page.ArticleData.PublishedDate)
 		}
 	}
-	dateStrings = util.SortStrings(dateStrings, sortedDesc)
+	dateStrings = SortStrings(dateStrings, sortedDesc)
 	for _, dateString := range dateStrings {
 		sortedArticles = append(sortedArticles, articleMap[dateString])
 	}
@@ -55,17 +54,17 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
 		paths = append(paths, extraContentTemplate.Name())
-		defer util.RemoveFile(*extraContentTemplate)
+		defer RemoveFile(*extraContentTemplate)
 	}
 	paths = append(paths, getPartialsPaths(templatesRoot)...)
 
 	var htmlString bytes.Buffer
 	t, _ := template.New(conf.templateFileName).Funcs(template.FuncMap{
 		"ToRssDate": func(isoDate string) string {
-			return util.ISODateToRSSDateTime(isoDate)
+			return ISODateToRSSDateTime(isoDate)
 		},
 		"GetNowAsRSSDateTime": func() string {
-			return util.GetNowAsRSSDateTime()
+			return GetNowAsRSSDateTime()
 		},
 	}).ParseFiles(paths...)
 
@@ -76,7 +75,7 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 			ArticleCount: len(pagesThatAreArticles),
 			LocalPage:    page,
 		})
-	util.PanicOnError(err)
+	PanicOnError(err)
 
 	return renderedPage{
 		FolderName:  conf.resultFolderName,
@@ -89,12 +88,12 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 }
 
 func createContentTemplate(content string) *os.File {
-	return util.WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
+	return WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
 }
 
 func collectAssets(assetFolderPath, resultFolderName string) []asset {
 	var assets []asset
-	for _, assetFile := range util.ListFilesMatching(assetFolderPath, `.*\.[^mdhtml]+`) {
+	for _, assetFile := range ListFilesMatching(assetFolderPath, `.*\.[^mdhtml]+`) {
 		assets = append(assets,
 			asset{FileName: assetFile.Name(),
 				FolderName:   resultFolderName,

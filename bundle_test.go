@@ -1,9 +1,10 @@
-package gorkify
+package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIsDraft(t *testing.T) {

@@ -1,11 +1,10 @@
-package gorkify
+package main
 
 import (
-	"gorki/util"
 	"log"
 )
 
-func Gorkify(settings util.Settings) {
+func Gorkify(settings Settings) {
 	publishablePages := collectAllBundles(settings)
 
 	for _, pack := range renderPages(settings, publishablePages) {

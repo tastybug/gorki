@@ -1,7 +1,6 @@
-package gorkify
+package main
 
 import (
-	"gorki/util"
 	"log"
 	"path/filepath"
 
@@ -45,27 +44,27 @@ func newBundle(articlesRootPath, bundleName, rawContent string) bundle {
 }
 
 func readPublishedDate(input string) string {
-	return util.ExtractGroupOrFailOnMismatch(input, publishedDatePattern, `value`)
+	return ExtractGroupOrFailOnMismatch(input, publishedDatePattern, `value`)
 }
 
 func readDescription(input string) string {
-	return util.ExtractGroupOrFailOnMismatch(input, descriptionPattern, `value`)
+	return ExtractGroupOrFailOnMismatch(input, descriptionPattern, `value`)
 }
 
 func readTitle(input string) string {
-	return util.ExtractGroupOrFailOnMismatch(input, titlePattern, `value`)
+	return ExtractGroupOrFailOnMismatch(input, titlePattern, `value`)
 }
 
 func readContentBlock(input string) string {
-	return util.ExtractGroupOrFailOnMismatch(input, structurePattern, `content`)
+	return ExtractGroupOrFailOnMismatch(input, structurePattern, `content`)
 }
 
 func readMetadataBlock(input string) string {
-	return util.ExtractGroupOrFailOnMismatch(input, structurePattern, `meta`)
+	return ExtractGroupOrFailOnMismatch(input, structurePattern, `meta`)
 }
 
 func isDraft(input string) bool {
-	value := util.ExtractGroupOrFailOnMismatch(input, isDraftPattern, `value`)
+	value := ExtractGroupOrFailOnMismatch(input, isDraftPattern, `value`)
 	if value == `false` {
 		return false
 	} else if value == `true` {

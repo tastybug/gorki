@@ -1,4 +1,4 @@
-module gorki
+module github.com/tastybug/gorki
 
 go 1.16
 

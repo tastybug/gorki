@@ -1,26 +1,25 @@
-package gorkify
+package main
 
 import (
 	"bufio"
-	"gorki/util"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-func writeContentPack(settings util.Settings, pack renderedPage) {
+func writeContentPack(settings Settings, pack renderedPage) {
 	targetDir := settings.TargetRoot
 	if pack.FolderName != `` {
-		util.CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))
+		CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))
 	}
 	f, err := os.Create(filepath.Join(targetDir, pack.FolderName, pack.FileName))
-	util.PanicOnError(err)
-	defer util.CloseFile(*f)
+	PanicOnError(err)
+	defer CloseFile(*f)
 	fileWriter := bufio.NewWriter(f)
 	_, err = fileWriter.Write([]byte(pack.HtmlContent))
-	util.PanicOnError(err)
+	PanicOnError(err)
 	err = fileWriter.Flush()
-	util.PanicOnError(err)
+	PanicOnError(err)
 
 	for _, asset := range pack.assets {
 		writeAsset(targetDir, asset)
@@ -32,9 +31,9 @@ func writeAsset(targetRoot string, asset asset) {
 	var writeToPath string
 	if asset.FolderName != `` {
 		writeToPath = filepath.Join(targetRoot, asset.FolderName, asset.FileName)
-		util.CreateDirIfNotExisting(filepath.Join(targetRoot, asset.FolderName))
+		CreateDirIfNotExisting(filepath.Join(targetRoot, asset.FolderName))
 	} else {
 		writeToPath = filepath.Join(targetRoot, asset.FileName)
 	}
-	util.CopyFile(asset.CopyFromPath, writeToPath)
+	CopyFile(asset.CopyFromPath, writeToPath)
 }
