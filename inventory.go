@@ -6,26 +6,22 @@ import (
 )
 
 func collectAllBundles(settings Settings) []bundle {
-	pages := collectArticleBundles(settings)
+	pages := collectUsableArticleBundles(settings)
 	pages = append(pages, collectStaticBundles(settings)...)
 	return pages
 }
 
-func collectArticleBundles(settings Settings) []bundle {
+func collectUsableArticleBundles(settings Settings) []bundle {
 	articlesRootPath := settings.ArticlesRoot
 	var bundles []bundle
 	for _, bundle := range ListDirectories(articlesRootPath) {
-		articlePath := filepath.Join(articlesRootPath, bundle.Name(), `article.md`)
-		if Exists(articlePath) {
-			page := newBundle(articlesRootPath, bundle.Name(), ReadFileContent(articlePath))
-			if !page.ArticleData.IsDraft {
-				log.Printf("Proceeding with non-draft article '%s' at '%s'", page.ArticleData.Title, articlePath)
-				bundles = append(bundles, page)
-			} else {
-				log.Printf("Skipping draft article '%s.'", bundle.Name())
-			}
+		page, err := newBundle(articlesRootPath, bundle.Name())
+		if err != nil {
+			log.Println("Skipping broken bucket:", err)
+		} else if page.isToBeRendered() {
+			bundles = append(bundles, page)
 		} else {
-			log.Printf("Skipping bundle '%s', no 'article.md' found.", bundle.Name())
+			log.Println("Skipping bucket not to be rendered:", bundle.Name())
 		}
 	}
 	return bundles

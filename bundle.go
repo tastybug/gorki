@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"path/filepath"
 
@@ -13,7 +14,14 @@ const publishedDatePattern = `[p|P]ublishedDate: ?(?P<value>[\-\:\w. ]*)`
 const descriptionPattern = `[d|D]escription: ?(?P<value>[&!?\/'\(\)\[\]\w.,; *\"-]*)`
 const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 
-func newBundle(articlesRootPath, bundleName, rawContent string) bundle {
+func newBundle(articlesRootPath, bundleName string) (bundle, error) {
+
+	articlePath := filepath.Join(articlesRootPath, bundleName, `article.md`)
+	if !PathExists(articlePath) {
+		return bundle{}, errors.New("Cannot build bundle '" + bundleName + "', no 'article.md' found.")
+	}
+
+	rawContent := ReadFileContent(articlePath)
 
 	metadata := readMetadataBlock(rawContent)
 	mdContent := readContentBlock(rawContent)
@@ -22,10 +30,7 @@ func newBundle(articlesRootPath, bundleName, rawContent string) bundle {
 	publishedDate := readPublishedDate(metadata)
 	isDraft := isDraft(metadata)
 
-	log.Printf("Found bundle '%s':\n title: '%s',\n description: '%s',\n published on: '%s',\n draft: %t",
-		bundleName, title, description, publishedDate, isDraft)
-
-	return bundle{
+	result := bundle{
 		ArticleData: articleData{
 			IsDraft:       isDraft,
 			BucketName:    bundleName,
@@ -41,6 +46,8 @@ func newBundle(articlesRootPath, bundleName, rawContent string) bundle {
 			bundleName,
 			`article.html`},
 	}
+	result.printSummary()
+	return result, nil
 }
 
 func readPublishedDate(input string) string {
@@ -72,6 +79,19 @@ func isDraft(input string) bool {
 	} else {
 		return true
 	}
+}
+
+func (b *bundle) isToBeRendered() bool {
+	return !b.ArticleData.IsDraft
+}
+
+func (b *bundle) printSummary() {
+	log.Println("Bundle--------------", b.ArticleData.BucketName)
+	log.Println("    - title:        ", b.ArticleData.Title)
+	log.Println("    - description:  ", b.ArticleData.Description)
+	log.Println("    - published on: ", b.ArticleData.PublishedDate)
+	log.Println("    - draft:        ", b.ArticleData.IsDraft)
+	log.Println("    - article size  ", len(b.TemplatingConf.extraContent), "bytes")
 }
 
 type bundle struct {

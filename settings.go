@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"log"
+	"os"
 	"path/filepath"
 )
 
@@ -19,7 +21,7 @@ const articleDirName string = `posts`
 
 var settings Settings
 
-func GetSettings() Settings {
+func PrepareEnvironment() Settings {
 	if settings.SiteRoot == `` {
 		siteRoot, targetName := readFromArgs()
 		settings = Settings{
@@ -29,7 +31,24 @@ func GetSettings() Settings {
 			ArticlesRoot:  filepath.Join(siteRoot, articleDirName),
 		}
 	}
+	createOrPurgeTargetFolder(settings.TargetRoot)
+	log.Println("Environment: reading from", settings.SiteRoot, "and writing to", settings.TargetRoot)
+
 	return settings
+}
+
+func createOrPurgeTargetFolder(dir string) {
+	if _, err := os.Stat(dir); err == nil {
+		log.Printf("Emptying target folder '%s'.\n", dir)
+		for _, toBeRemoved := range ListFilesAndDirs(dir) {
+			name := toBeRemoved.Name()
+			PanicOnError(os.RemoveAll(filepath.Join(dir, name)))
+		}
+	} else {
+		log.Printf("Creating non-existent target folder '%s'.\n", dir)
+		err := os.Mkdir(dir, os.FileMode(0740))
+		PanicOnError(err)
+	}
 }
 
 func readFromArgs() (string, string) {

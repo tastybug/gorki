@@ -46,7 +46,7 @@ func ListDirectories(dir string) []os.FileInfo {
 }
 
 func CreateDirIfNotExisting(path string) {
-	if !Exists(path) {
+	if !PathExists(path) {
 		PanicOnError(os.MkdirAll(path, 0740))
 	}
 }
@@ -89,7 +89,7 @@ func CopyFile(sourcePath, destinationPath string) {
 	defer PanicOnError(out.Close())
 }
 
-func Exists(path string) bool {
+func PathExists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
