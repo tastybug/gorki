@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"runtime"
 )
 
 func main() {
 	settings := PrepareEnvironment()
 
-	Gorkify(settings)
+	gorkify(settings)
 
 	printMemUsage()
 }
@@ -26,4 +27,15 @@ func printMemUsage() {
 
 func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
+}
+
+func gorkify(settings Settings) {
+	publishablePages := collectAllBundles(settings)
+
+	for _, pack := range renderPages(settings, publishablePages) {
+		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
+		writeContentPack(settings, pack)
+	}
+
+	log.Println("Finished generation.")
 }
