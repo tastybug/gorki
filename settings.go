@@ -62,8 +62,9 @@ func createOrPurgeTargetFolder(dir string) {
 }
 
 func readFromArgs() (string, string) {
-	var siteDir = flag.String("s", defaultSiteDir, "site directory (relative to CWD)")
-	var targetDir = flag.String("t", defaultTargetDirName, "target directory name; will be created in site directory")
+
+	var siteDir = flag.String("s", defaultSiteDir, "site directory")
+	var targetDir = flag.String("t", defaultTargetDirName, "output directory name; will be purged if already existing")
 
 	flag.Parse()
 
