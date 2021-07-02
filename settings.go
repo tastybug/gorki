@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"os"
@@ -21,20 +22,29 @@ const articleDirName string = `posts`
 
 var settings Settings
 
-func PrepareEnvironment() Settings {
-	if settings.SiteRoot == `` {
-		siteRoot, targetName := readFromArgs()
-		settings = Settings{
-			SiteRoot:      siteRoot,
-			TargetRoot:    filepath.Join(siteRoot, targetName),
-			TemplatesRoot: filepath.Join(siteRoot, defaultTemplatesDirName),
-			ArticlesRoot:  filepath.Join(siteRoot, articleDirName),
-		}
+func getVerifiedEnvironment() (Settings, error) {
+	siteRoot, targetName := readFromArgs()
+	settings = Settings{
+		SiteRoot:      siteRoot,
+		TargetRoot:    filepath.Join(siteRoot, targetName),
+		TemplatesRoot: filepath.Join(siteRoot, defaultTemplatesDirName),
+		ArticlesRoot:  filepath.Join(siteRoot, articleDirName),
 	}
+
+	if !PathExists(settings.SiteRoot) {
+		return settings, errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
+	}
+	if !PathExists(settings.TemplatesRoot) {
+		return settings, errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
+	}
+	if !PathExists(settings.ArticlesRoot) {
+		return settings, errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
+	}
+
 	createOrPurgeTargetFolder(settings.TargetRoot)
 	log.Println("Environment: reading from", settings.SiteRoot, "and writing to", settings.TargetRoot)
 
-	return settings
+	return settings, nil
 }
 
 func createOrPurgeTargetFolder(dir string) {

@@ -3,14 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 )
 
 func main() {
-	settings := PrepareEnvironment()
+	settings, envError := getVerifiedEnvironment()
+	if envError != nil {
+		log.Fatalf("Fatal: %v", envError)
+		os.Exit(1)
+	}
 
 	gorkify(settings)
-
 	printMemUsage()
 }
 
