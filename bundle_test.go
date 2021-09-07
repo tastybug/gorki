@@ -41,7 +41,7 @@ func TestReadDescription(t *testing.T) {
 }
 
 func TestReadContent(t *testing.T) {
-	expected := "Check out the project and have a look at the [README](https://github.com/tastybug/terraform-aws-playground/blob/master/README.md) for complete instructions. Make sure that your AWS credentials are available at `~/.aws/credentials`, which you get when you setup `awscli` as recommended. If you want to avoid this, simply provide the credentials as environment variables."
+	expected := "Check out the project and have a look at the [README](https://github.com/tastybug/terraform-aws-playground/blob/master/README.md) for complete instructions. Make sure that your AWS credentials are available at `~/.aws/credentials`, which you get when you setup `awscli` as recommended. If you want to avoid this, simply provide the credentials as environment variables. +?€"
 	input := fmt.Sprintf("---\nBla\n---%s", expected)
 
 	actual := readContentBlock(input)
