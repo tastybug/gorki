@@ -25,6 +25,7 @@ func PathExists(path string) bool {
 }
 
 func CloseFile(f os.File) {
-	err := f.Close()
-	PanicOnError(err)
+	if err := f.Close(); err != nil {
+		panic(err)
+	}
 }

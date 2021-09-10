@@ -93,8 +93,9 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 }
 
 func RemoveFile(f os.File) {
-	err := os.Remove(f.Name())
-	PanicOnError(err)
+	if err := os.Remove(f.Name()); err != nil {
+		panic(err)
+	}
 }
 
 func createContentTemplate(content string) *os.File {
@@ -130,13 +131,13 @@ func collectAssets(assetFolderPath, resultFolderName string) []asset {
 }
 
 func ListFilesMatching(dir, pattern string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-
-	onlyWithSuffix := func(file os.FileInfo) bool {
-		return matches(file.Name(), pattern) && !file.IsDir()
+	if allFiles, err := ioutil.ReadDir(dir); err != nil {
+		panic(err)
+	} else {
+		return filter(allFiles, func(file os.FileInfo) bool {
+			return matches(file.Name(), pattern) && !file.IsDir()
+		})
 	}
-	return filter(allFiles, onlyWithSuffix)
 }
 
 type templateDataContext struct {
@@ -179,13 +180,14 @@ func matches(data, pattern string) bool {
 }
 
 func ISODateToRSSDateTime(isoDate string) string {
-	dateTime, err := time.Parse(`2006-01-02`, isoDate)
-	PanicOnError(err)
-
-	// RSS asks for RFC822 date formats, see https://www.w3.org/Protocols/rfc822/#z28
-	// nonetheless the RSS validator at https://validator.w3.org/feed/check.cgi asks for day of the week
-	// which you get with RC1123 only, so using this instead of the 822 formatter
-	return dateTime.Format(time.RFC1123Z)
+	if dateTime, err := time.Parse(`2006-01-02`, isoDate); err != nil {
+		panic(err)
+	} else {
+		// RSS asks for RFC822 date formats, see https://www.w3.org/Protocols/rfc822/#z28
+		// nonetheless the RSS validator at https://validator.w3.org/feed/check.cgi asks for day of the week
+		// which you get with RC1123 only, so using this instead of the 822 formatter
+		return dateTime.Format(time.RFC1123Z)
+	}
 }
 
 func GetNowAsRSSDateTime() string {

@@ -72,9 +72,10 @@ func collectStaticBundles(settings Settings) []bundle {
 }
 
 func ListDirectories(dir string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-
-	isDir := func(file os.FileInfo) bool { return file.IsDir() }
-	return filter(allFiles, isDir)
+	if allFiles, err := ioutil.ReadDir(dir); err != nil {
+		panic(err)
+	} else {
+		isDir := func(file os.FileInfo) bool { return file.IsDir() }
+		return filter(allFiles, isDir)
+	}
 }
