@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 )
@@ -16,7 +15,7 @@ func ExtractGroupOrFailOnMismatch(data string, pattern string, groupName string)
 			return result[index]
 		}
 	}
-	panic(errors.New(fmt.Sprintf("No match for group '%s' in pattern '%s':\n%s.", groupName, pattern, data)))
+	panic(fmt.Errorf("no match for group '%s' in pattern '%s': %s", groupName, pattern, data))
 }
 
 func matches(data, pattern string) bool {

@@ -22,7 +22,7 @@ const articleDirName string = `posts`
 
 var settings Settings
 
-func getVerifiedEnvironment() (Settings, error) {
+func newSettings() (Settings, error) {
 	siteRoot, targetName := readFromArgs()
 	settings = Settings{
 		SiteRoot:      siteRoot,

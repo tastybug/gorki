@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"runtime"
 )
 
 func main() {
-	settings, envError := getVerifiedEnvironment()
-	if envError != nil {
-		log.Fatalf("Fatal: %v", envError)
-		os.Exit(1)
+	settings, err := newSettings()
+	if err != nil {
+		log.Fatalf("Fatal: %v", err)
 	}
 
 	gorkify(settings)
