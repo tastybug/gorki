@@ -19,8 +19,8 @@ const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 func newBundle(articlesRootPath, bundleName string) (bundle, error) {
 
 	articlePath := filepath.Join(articlesRootPath, bundleName, `article.md`)
-	if !PathExists(articlePath) {
-		return bundle{}, errors.New("Cannot build bundle '" + bundleName + "', no 'article.md' found.")
+	if !pathExists(articlePath) {
+		return bundle{}, errors.New("cannot build bundle '" + bundleName + "', no 'article.md' found")
 	}
 
 	rawContent := ReadFileContent(articlePath)
@@ -119,17 +119,17 @@ type templatingConf struct {
 }
 
 func ReadFileContent(path string) string {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer CloseFile(*file)
+	if file, err := os.Open(path); err != nil {
+		panic(err)
+	} else {
+		defer closeFile(*file)
 
-	scanner := bufio.NewScanner(file)
-	var content string
-	for scanner.Scan() {
-		content += scanner.Text() + "\n"
-	}
+		scanner := bufio.NewScanner(file)
+		var content string
+		for scanner.Scan() {
+			content += scanner.Text() + "\n"
+		}
 
-	return content
+		return content
+	}
 }

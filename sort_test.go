@@ -8,7 +8,7 @@ func TestSortStringsAsc(t *testing.T) {
 
 	input := []string{`a`, `c`, `b`, `f`}
 
-	result := SortStrings(input, false)
+	result := sort(input, false)
 
 	if !Equal(result, []string{`a`, `b`, `c`, `f`}) {
 		t.Fatalf("result is not sorted asc: %s", result)
@@ -18,7 +18,7 @@ func TestSortStringsAsc(t *testing.T) {
 func TestSortStringsWithRepeatingSimilarValues(t *testing.T) {
 	input := []string{`a`, `a`, `b`, `a`, `b`, `a`}
 
-	result := SortStrings(input, false)
+	result := sort(input, false)
 
 	if !Equal(result, []string{`a`, `a`, `a`, `a`, `b`, `b`}) {
 		t.Fatalf("result is not sorted asc: %s", result)
@@ -29,7 +29,7 @@ func TestSortStringsDesc(t *testing.T) {
 
 	input := []string{`a`, `c`, `b`, `f`}
 	// true
-	result := SortStrings(input, true)
+	result := sort(input, true)
 
 	if !Equal(result, []string{`f`, `c`, `b`, `a`}) {
 		t.Fatalf("result is not sorted desc: %s", result)
@@ -40,7 +40,7 @@ func TestSortSingleString(t *testing.T) {
 
 	input := []string{`a`}
 	// true
-	result := SortStrings(input, true)
+	result := sort(input, true)
 
 	if !Equal(result, []string{`a`}) {
 		t.Fatalf("result is not sorted desc: %s", result)

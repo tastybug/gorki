@@ -2,13 +2,13 @@ package main
 
 import "strings"
 
-func SortStrings(unsorted []string, desc bool) []string {
+func sort(input []string, desc bool) []string {
 	var sorted []string
 	var bestMatch string
 	var bestMatchIndex int
 
-	for len(unsorted) > 0 {
-		for index, candidate := range unsorted {
+	for len(input) > 0 {
+		for index, candidate := range input {
 			if bestMatch == `` {
 				bestMatch = candidate
 				bestMatchIndex = index
@@ -21,7 +21,7 @@ func SortStrings(unsorted []string, desc bool) []string {
 			}
 		}
 		sorted = append(sorted, bestMatch)
-		unsorted = RemoveIndex(unsorted, bestMatchIndex)
+		input = RemoveIndex(input, bestMatchIndex)
 		bestMatch = ``
 		bestMatchIndex = -1
 	}

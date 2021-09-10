@@ -45,7 +45,7 @@ func filterArticlesAndSortByDate(bundles []bundle, sortedDesc bool) []bundle {
 			dateStrings = append(dateStrings, page.ArticleData.PublishedDate)
 		}
 	}
-	dateStrings = SortStrings(dateStrings, sortedDesc)
+	dateStrings = sort(dateStrings, sortedDesc)
 	for _, dateString := range dateStrings {
 		sortedArticles = append(sortedArticles, articleMap[dateString])
 	}
@@ -59,7 +59,7 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
 		paths = append(paths, extraContentTemplate.Name())
-		defer RemoveFile(*extraContentTemplate)
+		defer removeFile(*extraContentTemplate)
 	}
 	paths = append(paths, getPartialsPaths(templatesRoot)...)
 
@@ -73,14 +73,15 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 		},
 	}).ParseFiles(paths...)
 
-	err := t.Execute(
+	if err := t.Execute(
 		&htmlString,
 		templateDataContext{
 			AllArticles:  pagesThatAreArticles,
 			ArticleCount: len(pagesThatAreArticles),
 			LocalPage:    page,
-		})
-	PanicOnError(err)
+		}); err != nil {
+		panic(err)
+	}
 
 	return renderedPage{
 		FolderName:  conf.resultFolderName,
@@ -92,27 +93,25 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 	}
 }
 
-func RemoveFile(f os.File) {
+func removeFile(f os.File) {
 	if err := os.Remove(f.Name()); err != nil {
 		panic(err)
 	}
 }
 
 func createContentTemplate(content string) *os.File {
-	return WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
-}
-
-func WriteToTempFile(content string) *os.File {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "gorki-")
-	PanicOnError(err)
-
-	fileWriter := bufio.NewWriter(tmpFile)
-	_, err = fileWriter.Write([]byte(content))
-	PanicOnError(err)
-	err = fileWriter.Flush()
-	PanicOnError(err)
-
-	return tmpFile
+	if tmpFile, err := ioutil.TempFile(os.TempDir(), "gorki-"); err != nil {
+		panic(err)
+	} else {
+		fileWriter := bufio.NewWriter(tmpFile)
+		if _, err = fileWriter.Write([]byte("{{define \"content\"}}" + content + "{{end}}")); err != nil {
+			panic(err)
+		}
+		if err = fileWriter.Flush(); err != nil {
+			panic(err)
+		}
+		return tmpFile
+	}
 }
 
 func collectAssets(assetFolderPath, resultFolderName string) []asset {

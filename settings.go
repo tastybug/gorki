@@ -32,13 +32,13 @@ func newSettings() (Settings, error) {
 		ArticlesRoot:  filepath.Join(siteRoot, articleDirName),
 	}
 
-	if !PathExists(settings.SiteRoot) {
+	if !pathExists(settings.SiteRoot) {
 		return settings, errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
 	}
-	if !PathExists(settings.TemplatesRoot) {
+	if !pathExists(settings.TemplatesRoot) {
 		return settings, errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
 	}
-	if !PathExists(settings.ArticlesRoot) {
+	if !pathExists(settings.ArticlesRoot) {
 		return settings, errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
 	}
 
@@ -53,19 +53,24 @@ func createOrPurgeTargetFolder(dir string) {
 		log.Printf("Emptying target folder '%s'.\n", dir)
 		for _, toBeRemoved := range ListFilesAndDirs(dir) {
 			name := toBeRemoved.Name()
-			PanicOnError(os.RemoveAll(filepath.Join(dir, name)))
+			if err := os.RemoveAll(filepath.Join(dir, name)); err != nil {
+				panic(err)
+			}
 		}
 	} else {
 		log.Printf("Creating non-existent target folder '%s'.\n", dir)
-		err := os.Mkdir(dir, os.FileMode(0740))
-		PanicOnError(err)
+		if err := os.Mkdir(dir, os.FileMode(0740)); err != nil {
+			panic(err)
+		}
 	}
 }
 
 func ListFilesAndDirs(dir string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-	return allFiles
+	if allFiles, err := ioutil.ReadDir(dir); err != nil {
+		panic(err)
+	} else {
+		return allFiles
+	}
 }
 
 func readFromArgs() (string, string) {

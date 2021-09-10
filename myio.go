@@ -13,7 +13,7 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 	return
 }
 
-func PathExists(path string) bool {
+func pathExists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
@@ -24,7 +24,7 @@ func PathExists(path string) bool {
 	return false
 }
 
-func CloseFile(f os.File) {
+func closeFile(f os.File) {
 	if err := f.Close(); err != nil {
 		panic(err)
 	}

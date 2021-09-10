@@ -11,19 +11,22 @@ import (
 func writeContentPack(settings Settings, pack renderedPage) {
 	targetDir := settings.TargetRoot
 	if pack.FolderName != `` {
-		CreateDirIfNotExisting(filepath.Join(targetDir, pack.FolderName))
+		ensureDir(filepath.Join(targetDir, pack.FolderName))
 	}
-	f, err := os.Create(filepath.Join(targetDir, pack.FolderName, pack.FileName))
-	PanicOnError(err)
-	defer CloseFile(*f)
-	fileWriter := bufio.NewWriter(f)
-	_, err = fileWriter.Write([]byte(pack.HtmlContent))
-	PanicOnError(err)
-	err = fileWriter.Flush()
-	PanicOnError(err)
-
-	for _, asset := range pack.assets {
-		writeAsset(targetDir, asset)
+	if f, err := os.Create(filepath.Join(targetDir, pack.FolderName, pack.FileName)); err != nil {
+		panic(err)
+	} else {
+		defer closeFile(*f)
+		fileWriter := bufio.NewWriter(f)
+		if _, err = fileWriter.Write([]byte(pack.HtmlContent)); err != nil {
+			panic(err)
+		}
+		if err = fileWriter.Flush(); err != nil {
+			panic(err)
+		}
+		for _, asset := range pack.assets {
+			writeAsset(targetDir, asset)
+		}
 	}
 }
 
@@ -32,28 +35,37 @@ func writeAsset(targetRoot string, asset asset) {
 	var writeToPath string
 	if asset.FolderName != `` {
 		writeToPath = filepath.Join(targetRoot, asset.FolderName, asset.FileName)
-		CreateDirIfNotExisting(filepath.Join(targetRoot, asset.FolderName))
+		ensureDir(filepath.Join(targetRoot, asset.FolderName))
 	} else {
 		writeToPath = filepath.Join(targetRoot, asset.FileName)
 	}
-	CopyFile(asset.CopyFromPath, writeToPath)
+	copyFile(asset.CopyFromPath, writeToPath)
 }
 
-func CopyFile(sourcePath, destinationPath string) {
-	in, err := os.Open(sourcePath)
-	PanicOnError(err)
-	defer CloseFile(*in)
-
-	out, err := os.Create(destinationPath)
-	PanicOnError(err)
-
-	_, err = io.Copy(out, in)
-	PanicOnError(err)
-	defer PanicOnError(out.Close())
+func copyFile(sourcePath, destinationPath string) {
+	if in, err := os.Open(sourcePath); err != nil {
+		panic(err)
+	} else {
+		defer closeFile(*in)
+		if out, err := os.Create(destinationPath); err != nil {
+			panic(err)
+		} else {
+			defer func() {
+				if err := out.Close(); err != nil {
+					panic(err)
+				}
+			}()
+			if _, err = io.Copy(out, in); err != nil {
+				panic(err)
+			}
+		}
+	}
 }
 
-func CreateDirIfNotExisting(path string) {
-	if !PathExists(path) {
-		PanicOnError(os.MkdirAll(path, 0740))
+func ensureDir(path string) {
+	if !pathExists(path) {
+		if err := os.MkdirAll(path, 0740); err != nil {
+			panic(err)
+		}
 	}
 }
