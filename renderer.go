@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"html/template"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
+	"time"
 )
 
 func renderPages(settings Settings, bundles []bundle) []renderedPage {
@@ -87,8 +92,26 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 	}
 }
 
+func RemoveFile(f os.File) {
+	err := os.Remove(f.Name())
+	PanicOnError(err)
+}
+
 func createContentTemplate(content string) *os.File {
 	return WriteToTempFile("{{define \"content\"}}" + content + "{{end}}")
+}
+
+func WriteToTempFile(content string) *os.File {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "gorki-")
+	PanicOnError(err)
+
+	fileWriter := bufio.NewWriter(tmpFile)
+	_, err = fileWriter.Write([]byte(content))
+	PanicOnError(err)
+	err = fileWriter.Flush()
+	PanicOnError(err)
+
+	return tmpFile
 }
 
 func collectAssets(assetFolderPath, resultFolderName string) []asset {
@@ -104,6 +127,16 @@ func collectAssets(assetFolderPath, resultFolderName string) []asset {
 	} else {
 		return nil
 	}
+}
+
+func ListFilesMatching(dir, pattern string) []os.FileInfo {
+	allFiles, err := ioutil.ReadDir(dir)
+	PanicOnError(err)
+
+	onlyWithSuffix := func(file os.FileInfo) bool {
+		return matches(file.Name(), pattern) && !file.IsDir()
+	}
+	return filter(allFiles, onlyWithSuffix)
 }
 
 type templateDataContext struct {
@@ -126,4 +159,35 @@ type asset struct {
 	FolderName   string
 	FileName     string
 	CopyFromPath string
+}
+
+func ExtractGroupOrFailOnMismatch(data string, pattern string, groupName string) string {
+
+	r := regexp.MustCompile(pattern)
+	result := r.FindStringSubmatch(data)
+
+	for index, value := range r.SubexpNames() {
+		if value == groupName && len(result) >= index {
+			return result[index]
+		}
+	}
+	panic(fmt.Errorf("no match for group '%s' in pattern '%s': %s", groupName, pattern, data))
+}
+
+func matches(data, pattern string) bool {
+	return regexp.MustCompile(pattern).MatchString(data)
+}
+
+func ISODateToRSSDateTime(isoDate string) string {
+	dateTime, err := time.Parse(`2006-01-02`, isoDate)
+	PanicOnError(err)
+
+	// RSS asks for RFC822 date formats, see https://www.w3.org/Protocols/rfc822/#z28
+	// nonetheless the RSS validator at https://validator.w3.org/feed/check.cgi asks for day of the week
+	// which you get with RC1123 only, so using this instead of the 822 formatter
+	return dateTime.Format(time.RFC1123Z)
+}
+
+func GetNowAsRSSDateTime() string {
+	return time.Now().Format(time.RFC1123Z)
 }

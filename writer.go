@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -36,4 +37,23 @@ func writeAsset(targetRoot string, asset asset) {
 		writeToPath = filepath.Join(targetRoot, asset.FileName)
 	}
 	CopyFile(asset.CopyFromPath, writeToPath)
+}
+
+func CopyFile(sourcePath, destinationPath string) {
+	in, err := os.Open(sourcePath)
+	PanicOnError(err)
+	defer CloseFile(*in)
+
+	out, err := os.Create(destinationPath)
+	PanicOnError(err)
+
+	_, err = io.Copy(out, in)
+	PanicOnError(err)
+	defer PanicOnError(out.Close())
+}
+
+func CreateDirIfNotExisting(path string) {
+	if !PathExists(path) {
+		PanicOnError(os.MkdirAll(path, 0740))
+	}
 }

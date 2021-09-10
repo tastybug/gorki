@@ -1,7 +1,9 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 )
 
@@ -67,4 +69,12 @@ func collectStaticBundles(settings Settings) []bundle {
 				`rss.xml`},
 		},
 	}
+}
+
+func ListDirectories(dir string) []os.FileInfo {
+	allFiles, err := ioutil.ReadDir(dir)
+	PanicOnError(err)
+
+	isDir := func(file os.FileInfo) bool { return file.IsDir() }
+	return filter(allFiles, isDir)
 }

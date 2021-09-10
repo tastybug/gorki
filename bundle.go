@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/gomarkdown/markdown"
@@ -114,4 +116,20 @@ type templatingConf struct {
 	templateFileName string
 	resultFolderName string
 	ResultFileName   string // used in template
+}
+
+func ReadFileContent(path string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer CloseFile(*file)
+
+	scanner := bufio.NewScanner(file)
+	var content string
+	for scanner.Scan() {
+		content += scanner.Text() + "\n"
+	}
+
+	return content
 }

@@ -1,71 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"io"
-	"io/ioutil"
-	"log"
 	"os"
 )
-
-func WriteToTempFile(content string) *os.File {
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "gorki-")
-	PanicOnError(err)
-
-	fileWriter := bufio.NewWriter(tmpFile)
-	_, err = fileWriter.Write([]byte(content))
-	PanicOnError(err)
-	err = fileWriter.Flush()
-	PanicOnError(err)
-
-	return tmpFile
-}
-
-func ListFilesMatching(dir, pattern string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-
-	onlyWithSuffix := func(file os.FileInfo) bool {
-		return matches(file.Name(), pattern) && !file.IsDir()
-	}
-	return filter(allFiles, onlyWithSuffix)
-}
-
-func ListFilesAndDirs(dir string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-	return allFiles
-}
-
-func ListDirectories(dir string) []os.FileInfo {
-	allFiles, err := ioutil.ReadDir(dir)
-	PanicOnError(err)
-
-	isDir := func(file os.FileInfo) bool { return file.IsDir() }
-	return filter(allFiles, isDir)
-}
-
-func CreateDirIfNotExisting(path string) {
-	if !PathExists(path) {
-		PanicOnError(os.MkdirAll(path, 0740))
-	}
-}
-
-func ReadFileContent(path string) string {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer CloseFile(*file)
-
-	scanner := bufio.NewScanner(file)
-	var content string
-	for scanner.Scan() {
-		content += scanner.Text() + "\n"
-	}
-
-	return content
-}
 
 func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo) {
 	for _, f := range files {
@@ -74,19 +11,6 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 		}
 	}
 	return
-}
-
-func CopyFile(sourcePath, destinationPath string) {
-	in, err := os.Open(sourcePath)
-	PanicOnError(err)
-	defer CloseFile(*in)
-
-	out, err := os.Create(destinationPath)
-	PanicOnError(err)
-
-	_, err = io.Copy(out, in)
-	PanicOnError(err)
-	defer PanicOnError(out.Close())
 }
 
 func PathExists(path string) bool {
@@ -102,10 +26,5 @@ func PathExists(path string) bool {
 
 func CloseFile(f os.File) {
 	err := f.Close()
-	PanicOnError(err)
-}
-
-func RemoveFile(f os.File) {
-	err := os.Remove(f.Name())
 	PanicOnError(err)
 }

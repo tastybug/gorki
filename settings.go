@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -59,6 +60,12 @@ func createOrPurgeTargetFolder(dir string) {
 		err := os.Mkdir(dir, os.FileMode(0740))
 		PanicOnError(err)
 	}
+}
+
+func ListFilesAndDirs(dir string) []os.FileInfo {
+	allFiles, err := ioutil.ReadDir(dir)
+	PanicOnError(err)
+	return allFiles
 }
 
 func readFromArgs() (string, string) {
