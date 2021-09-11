@@ -17,11 +17,11 @@ deploy: install __push_image
 
 __clean:
 	$(GOCLEAN)
-	rm -f $(BINARY_UNIX)
+	rm -f cmd/gorki/$(BINARY_UNIX)
 __test:
 	$(GOTEST) -v ./...
 __build_binary:
-	cd cmd/gorki; env GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v; $(GOINSTALL)
+	cd cmd/gorki && env GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v && $(GOINSTALL)
 __build_image:
 	docker build -t "tastybug/gorki" .
 __push_image:
