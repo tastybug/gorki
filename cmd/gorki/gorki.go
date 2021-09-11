@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+
+	g "github.com/tastybug/gorki/internal/gorki"
 )
 
 func main() {
-	settings, err := newSettings()
+	settings, err := g.NewSettings()
 	if err != nil {
 		log.Fatalf("Fatal: %v", err)
 	}
 
-	gorkify(settings)
+	gorken(settings)
 	printMemUsage()
 }
 
@@ -31,12 +33,12 @@ func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
 
-func gorkify(settings Settings) {
-	publishablePages := collectAllBundles(settings)
+func gorken(settings g.Settings) {
+	publishablePages := g.CollectAllBundles(settings)
 
-	for _, pack := range renderPages(settings, publishablePages) {
+	for _, pack := range g.RenderPages(settings, publishablePages) {
 		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
-		writeContentPack(settings, pack)
+		g.WriteContentPack(settings, pack)
 	}
 
 	log.Println("Finished generation.")

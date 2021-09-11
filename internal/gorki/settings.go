@@ -1,4 +1,4 @@
-package main
+package gorki
 
 import (
 	"errors"
@@ -23,7 +23,7 @@ const articleDirName string = `posts`
 
 var settings Settings
 
-func newSettings() (Settings, error) {
+func NewSettings() (Settings, error) {
 	siteRoot, targetName := readFromArgs()
 	settings = Settings{
 		SiteRoot:      siteRoot,

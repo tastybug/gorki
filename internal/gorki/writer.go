@@ -1,4 +1,4 @@
-package main
+package gorki
 
 import (
 	"bufio"
@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func writeContentPack(settings Settings, pack renderedPage) {
+func WriteContentPack(settings Settings, pack renderedPage) {
 	targetDir := settings.TargetRoot
 	if pack.FolderName != `` {
 		ensureDir(filepath.Join(targetDir, pack.FolderName))

@@ -1,4 +1,4 @@
-package main
+package gorki
 
 import (
 	"bufio"
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func renderPages(settings Settings, bundles []bundle) []renderedPage {
+func RenderPages(settings Settings, bundles []bundle) []renderedPage {
 	articleBundles := filterArticlesAndSortByDate(bundles, true)
 
 	var pages []renderedPage

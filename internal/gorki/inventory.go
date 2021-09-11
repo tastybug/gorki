@@ -1,4 +1,4 @@
-package main
+package gorki
 
 import (
 	"io/ioutil"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func collectAllBundles(settings Settings) []bundle {
+func CollectAllBundles(settings Settings) []bundle {
 	pages := collectUsableArticleBundles(settings)
 	pages = append(pages, collectStaticBundles(settings)...)
 	return pages
