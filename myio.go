@@ -13,7 +13,7 @@ func filter(files []os.FileInfo, test func(os.FileInfo) bool) (ret []os.FileInfo
 	return
 }
 
-func pathExists(path string) bool {
+func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true

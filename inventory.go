@@ -14,16 +14,15 @@ func collectAllBundles(settings Settings) []bundle {
 }
 
 func collectUsableArticleBundles(settings Settings) []bundle {
-	articlesRootPath := settings.ArticlesRoot
 	var bundles []bundle
-	for _, bundle := range ListDirectories(articlesRootPath) {
-		page, err := newBundle(articlesRootPath, bundle.Name())
+	for _, bundle := range listDirs(settings.ArticlesRoot) {
+		b, err := newBundle(settings.ArticlesRoot, bundle.Name())
 		if err != nil {
-			log.Println("Skipping broken bucket:", err)
-		} else if page.isToBeRendered() {
-			bundles = append(bundles, page)
+			log.Println("Skipping broken bundle:", err)
+		} else if b.isToBeRendered() {
+			bundles = append(bundles, b)
 		} else {
-			log.Println("Skipping bucket not to be rendered:", bundle.Name())
+			log.Println("Skipping bundle not to be rendered:", bundle.Name())
 		}
 	}
 	return bundles
@@ -71,7 +70,7 @@ func collectStaticBundles(settings Settings) []bundle {
 	}
 }
 
-func ListDirectories(dir string) []os.FileInfo {
+func listDirs(dir string) []os.FileInfo {
 	if allFiles, err := ioutil.ReadDir(dir); err != nil {
 		panic(err)
 	} else {

@@ -32,13 +32,13 @@ func newSettings() (Settings, error) {
 		ArticlesRoot:  filepath.Join(siteRoot, articleDirName),
 	}
 
-	if !pathExists(settings.SiteRoot) {
+	if !fileExists(settings.SiteRoot) {
 		return settings, errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
 	}
-	if !pathExists(settings.TemplatesRoot) {
+	if !fileExists(settings.TemplatesRoot) {
 		return settings, errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
 	}
-	if !pathExists(settings.ArticlesRoot) {
+	if !fileExists(settings.ArticlesRoot) {
 		return settings, errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
 	}
 

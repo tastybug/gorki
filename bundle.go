@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -19,35 +19,30 @@ const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 func newBundle(articlesRootPath, bundleName string) (bundle, error) {
 
 	articlePath := filepath.Join(articlesRootPath, bundleName, `article.md`)
-	if !pathExists(articlePath) {
-		return bundle{}, errors.New("cannot build bundle '" + bundleName + "', no 'article.md' found")
+	if !fileExists(articlePath) {
+		return bundle{}, fmt.Errorf("cannot build bundle '%s', no 'article.md' found", bundleName)
 	}
 
-	rawContent := ReadFileContent(articlePath)
-
+	rawContent := read(articlePath)
 	metadata := readMetadataBlock(rawContent)
-	mdContent := readContentBlock(rawContent)
-	title := readTitle(metadata)
-	description := readDescription(metadata)
-	publishedDate := readPublishedDate(metadata)
-	isDraft := isDraft(metadata)
 
 	result := bundle{
 		ArticleData: articleData{
-			IsDraft:       isDraft,
+			IsDraft:       isDraft(metadata),
 			BucketName:    bundleName,
-			Title:         title,
-			Description:   description,
-			PublishedDate: publishedDate,
+			Title:         readTitle(metadata),
+			Description:   readDescription(metadata),
+			PublishedDate: readPublishedDate(metadata),
 		},
 		TemplatingConf: templatingConf{
-			string(markdown.ToHTML([]byte(mdContent), nil, nil)),
+			string(markdown.ToHTML([]byte(readContentBlock(rawContent)), nil, nil)),
 			filepath.Join(articlesRootPath, bundleName),
 			`blogpost`,
 			`blogpost.html`,
 			bundleName,
 			`article.html`},
 	}
+
 	result.printSummary()
 	return result, nil
 }
@@ -74,13 +69,7 @@ func readMetadataBlock(input string) string {
 
 func isDraft(input string) bool {
 	value := ExtractGroupOrFailOnMismatch(input, isDraftPattern, `value`)
-	if value == `false` {
-		return false
-	} else if value == `true` {
-		return true
-	} else {
-		return true
-	}
+	return !(value == `false`)
 }
 
 func (b *bundle) isToBeRendered() bool {
@@ -118,7 +107,7 @@ type templatingConf struct {
 	ResultFileName   string // used in template
 }
 
-func ReadFileContent(path string) string {
+func read(path string) string {
 	if file, err := os.Open(path); err != nil {
 		panic(err)
 	} else {

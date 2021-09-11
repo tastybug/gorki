@@ -9,8 +9,20 @@ import (
 
 func TestIsDraft(t *testing.T) {
 
-	assert.False(t, isDraft(`---\nDraft: false\n---`), "Did not see that draft was declared FALSE")
-	assert.True(t, isDraft(`---\nDraft: true\n---`), "Did not see that draft was declared TRUE")
+	data := []struct {
+		input    string
+		expected bool
+	}{
+		{"---\nDraft: false\n---", false},
+		{"---\nDraft: true\n---", true},
+		{"---\nDraft: asdasd\n---", true},
+	}
+
+	for _, test := range data {
+		if actual := isDraft(test.input); actual != test.expected {
+			t.Errorf("input '%s' did not yield expected result %t", test.input, test.expected)
+		}
+	}
 }
 
 func TestReadTitle(t *testing.T) {

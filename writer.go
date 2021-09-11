@@ -63,7 +63,7 @@ func copyFile(sourcePath, destinationPath string) {
 }
 
 func ensureDir(path string) {
-	if !pathExists(path) {
+	if !fileExists(path) {
 		if err := os.MkdirAll(path, 0740); err != nil {
 			panic(err)
 		}
