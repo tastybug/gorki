@@ -19,7 +19,7 @@ const isDraftPattern = `[d|D]raft: ?(?P<value>(?:true|false)*)`
 func newBundle(articlesRootPath, bundleName string) (bundle, error) {
 
 	articlePath := filepath.Join(articlesRootPath, bundleName, `article.md`)
-	if !fileExists(articlePath) {
+	if !FileExists(articlePath) {
 		return bundle{}, fmt.Errorf("cannot build bundle '%s', no 'article.md' found", bundleName)
 	}
 

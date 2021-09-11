@@ -7,6 +7,13 @@ import (
 	"path/filepath"
 )
 
+type Settings struct {
+	SiteRoot      string
+	TargetRoot    string
+	TemplatesRoot string
+	ArticlesRoot  string
+}
+
 func CollectAllBundles(settings Settings) []bundle {
 	pages := collectUsableArticleBundles(settings)
 	pages = append(pages, collectStaticBundles(settings)...)

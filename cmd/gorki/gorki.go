@@ -1,21 +1,96 @@
 package main
 
 import (
+	"errors"
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"runtime"
 
 	g "github.com/tastybug/gorki/internal/gorki"
 )
 
 func main() {
-	settings, err := g.NewSettings()
+	settings, err := newSettings()
 	if err != nil {
 		log.Fatalf("Fatal: %v", err)
 	}
 
-	gorken(settings)
+	runGorki(settings)
 	printMemUsage()
+}
+
+func runGorki(settings g.Settings) {
+	publishablePages := g.CollectAllBundles(settings)
+
+	for _, pack := range g.RenderPages(settings, publishablePages) {
+		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
+		g.WriteContentPack(settings, pack)
+	}
+
+	log.Println("Finished generation.")
+}
+
+func newSettings() (g.Settings, error) {
+	settings := readFromArgs()
+
+	if !g.FileExists(settings.SiteRoot) {
+		return settings, errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
+	}
+	if !g.FileExists(settings.TemplatesRoot) {
+		return settings, errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
+	}
+	if !g.FileExists(settings.ArticlesRoot) {
+		return settings, errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
+	}
+
+	createOrPurgeTargetFolder(settings.TargetRoot)
+	log.Println("Environment: reading from", settings.SiteRoot, "and writing to", settings.TargetRoot)
+
+	return settings, nil
+}
+
+func readFromArgs() g.Settings {
+
+	var siteDir = flag.String("s", `site`, "site directory")
+	var targetDir = flag.String("t", `target`, "output directory name; will be purged if already existing")
+
+	flag.Parse()
+
+	return g.Settings{
+		SiteRoot:      *siteDir,
+		TargetRoot:    filepath.Join(*siteDir, *targetDir),
+		TemplatesRoot: filepath.Join(*siteDir, `templates`),
+		ArticlesRoot:  filepath.Join(*siteDir, `posts`),
+	}
+}
+
+func createOrPurgeTargetFolder(dir string) {
+	if _, err := os.Stat(dir); err == nil {
+		log.Printf("Emptying target folder '%s'.\n", dir)
+		for _, toBeRemoved := range ListFilesAndDirs(dir) {
+			name := toBeRemoved.Name()
+			if err := os.RemoveAll(filepath.Join(dir, name)); err != nil {
+				panic(err)
+			}
+		}
+	} else {
+		log.Printf("Creating non-existent target folder '%s'.\n", dir)
+		if err := os.Mkdir(dir, os.FileMode(0740)); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func ListFilesAndDirs(dir string) []os.FileInfo {
+	if allFiles, err := ioutil.ReadDir(dir); err != nil {
+		panic(err)
+	} else {
+		return allFiles
+	}
 }
 
 // https://golangcode.com/print-the-current-memory-usage/
@@ -31,15 +106,4 @@ func printMemUsage() {
 
 func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
-}
-
-func gorken(settings g.Settings) {
-	publishablePages := g.CollectAllBundles(settings)
-
-	for _, pack := range g.RenderPages(settings, publishablePages) {
-		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
-		g.WriteContentPack(settings, pack)
-	}
-
-	log.Println("Finished generation.")
 }
