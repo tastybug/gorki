@@ -10,62 +10,43 @@ import (
 	"path/filepath"
 	"runtime"
 
-	g "github.com/tastybug/gorki/internal/gorki"
+	g "github.com/tastybug/gorki/internal/gorkiconcurrent"
 )
 
 func main() {
-	settings, err := newSettings()
-	if err != nil {
-		log.Fatalf("Fatal: %v", err)
-	}
-
-	runGorki(settings)
+	runGorkify()
 	printMemUsage()
 }
 
-func runGorki(settings g.Settings) {
-	publishablePages := g.CollectAllBundles(settings)
-
-	for _, pack := range g.RenderPages(settings, publishablePages) {
-		log.Printf("Writing bundle %s/%s\n", pack.FolderName, pack.FileName)
-		g.WriteContentPack(settings, pack)
-	}
-
-	log.Println("Finished generation.")
-}
-
-func newSettings() (g.Settings, error) {
-	settings := readFromArgs()
-
-	if !g.FileExists(settings.SiteRoot) {
-		return settings, errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
-	}
-	if !g.FileExists(settings.TemplatesRoot) {
-		return settings, errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
-	}
-	if !g.FileExists(settings.ArticlesRoot) {
-		return settings, errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
-	}
-
-	createOrPurgeTargetFolder(settings.TargetRoot)
-	log.Println("Environment: reading from", settings.SiteRoot, "and writing to", settings.TargetRoot)
-
-	return settings, nil
-}
-
-func readFromArgs() g.Settings {
+func runGorkify() error {
 
 	var siteDir = flag.String("s", `site`, "site directory")
 	var targetDir = flag.String("t", `target`, "output directory name; will be purged if already existing")
 
 	flag.Parse()
 
-	return g.Settings{
+	settings := g.Settings{
 		SiteRoot:      *siteDir,
 		TargetRoot:    filepath.Join(*siteDir, *targetDir),
 		TemplatesRoot: filepath.Join(*siteDir, `templates`),
 		ArticlesRoot:  filepath.Join(*siteDir, `posts`),
 	}
+
+	if !g.FileExists(settings.SiteRoot) {
+		return errors.New("Site root expected at '" + settings.SiteRoot + "' but path does not exist.")
+	}
+	if !g.FileExists(settings.TemplatesRoot) {
+		return errors.New("Templates expected at '" + settings.TemplatesRoot + "' but path does not exist.")
+	}
+	if !g.FileExists(settings.ArticlesRoot) {
+		return errors.New("Articles expected at '" + settings.ArticlesRoot + "' but path does not exist.")
+	}
+
+	createOrPurgeTargetFolder(settings.TargetRoot)
+
+	g.Gorkify(settings)
+
+	return nil
 }
 
 func createOrPurgeTargetFolder(dir string) {

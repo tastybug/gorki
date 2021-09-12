@@ -1,37 +1,42 @@
-package gorki
+package gorkiconcurrent
 
 import (
 	"bufio"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 )
 
-func WriteContentPack(settings Settings, pack renderedPage) {
-	targetDir := settings.TargetRoot
-	if pack.FolderName != `` {
-		ensureDir(filepath.Join(targetDir, pack.FolderName))
+func write(targetDir string, inChan <-chan renderedBundle, outChan chan<- renderedBundle) {
+	for renderedBundle := range inChan {
+		writeImpl(targetDir, renderedBundle)
+		outChan <- renderedBundle
 	}
-	if f, err := os.Create(filepath.Join(targetDir, pack.FolderName, pack.FileName)); err != nil {
+	close(outChan)
+}
+
+func writeImpl(targetDir string, page renderedBundle) {
+	if page.FolderName != `` {
+		ensureDir(filepath.Join(targetDir, page.FolderName))
+	}
+	if f, err := os.Create(filepath.Join(targetDir, page.FolderName, page.FileName)); err != nil {
 		panic(err)
 	} else {
 		defer closeFile(*f)
 		fileWriter := bufio.NewWriter(f)
-		if _, err = fileWriter.Write([]byte(pack.HtmlContent)); err != nil {
+		if _, err = fileWriter.Write([]byte(page.HtmlContent)); err != nil {
 			panic(err)
 		}
 		if err = fileWriter.Flush(); err != nil {
 			panic(err)
 		}
-		for _, asset := range pack.assets {
+		for _, asset := range page.assets {
 			writeAsset(targetDir, asset)
 		}
 	}
 }
 
 func writeAsset(targetRoot string, asset asset) {
-	log.Printf("Writing asset %s/%s\n", asset.FolderName, asset.FileName)
 	var writeToPath string
 	if asset.FolderName != `` {
 		writeToPath = filepath.Join(targetRoot, asset.FolderName, asset.FileName)

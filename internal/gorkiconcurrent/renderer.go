@@ -1,4 +1,4 @@
-package gorki
+package gorkiconcurrent
 
 import (
 	"bufio"
@@ -6,22 +6,41 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
+	"text/tabwriter"
 	"time"
 )
 
-func RenderPages(settings Settings, bundles []bundle) []renderedPage {
+func render(templatesRoot string, inChan <-chan bundle, outChan chan<- renderedBundle) {
+	// drain the pipeline
+	allBundles := make([]bundle, 0)
+	for bundle := range inChan {
+		b := bundle
+		if b.isToBeRendered() {
+			allBundles = append(allBundles, b)
+		} else {
+			log.Printf("Ignoring bundle %s, not to be rendered.\n", bundle.name)
+		}
+	}
+	for _, page := range renderInternal(templatesRoot, allBundles) {
+		outChan <- page
+	}
+	close(outChan)
+}
+
+func renderInternal(templatesRoot string, bundles []bundle) []renderedBundle {
 	articleBundles := filterArticlesAndSortByDate(bundles, true)
 
-	var pages []renderedPage
+	var pages []renderedBundle
 	for _, bundle := range bundles {
 		pages = append(pages,
 			renderAndPackage(
 				bundle,
 				articleBundles,
-				settings.TemplatesRoot),
+				templatesRoot),
 		)
 	}
 	return pages
@@ -39,10 +58,10 @@ func filterArticlesAndSortByDate(bundles []bundle, sortedDesc bool) []bundle {
 	articleMap := make(map[string]bundle)
 	var dateStrings []string
 	var sortedArticles []bundle
-	for _, page := range bundles {
-		if page.ArticleData.PublishedDate != `` {
-			articleMap[page.ArticleData.PublishedDate] = page
-			dateStrings = append(dateStrings, page.ArticleData.PublishedDate)
+	for _, b := range bundles {
+		if b.kind == ARTICLE_BUNDLE {
+			articleMap[b.ArticleData.PublishedDate] = b
+			dateStrings = append(dateStrings, b.ArticleData.PublishedDate)
 		}
 	}
 	dateStrings = sort(dateStrings, sortedDesc)
@@ -53,8 +72,8 @@ func filterArticlesAndSortByDate(bundles []bundle, sortedDesc bool) []bundle {
 	return sortedArticles
 }
 
-func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot string) renderedPage {
-	conf := page.TemplatingConf
+func renderAndPackage(bndl bundle, pagesThatAreArticles []bundle, templatesRoot string) renderedBundle {
+	conf := bndl.TemplatingConf
 	paths := []string{filepath.Join(templatesRoot, conf.templateFolder, conf.templateFileName)}
 	if conf.extraContent != `` {
 		extraContentTemplate := createContentTemplate(conf.extraContent)
@@ -78,12 +97,13 @@ func renderAndPackage(page bundle, pagesThatAreArticles []bundle, templatesRoot 
 		templateDataContext{
 			AllArticles:  pagesThatAreArticles,
 			ArticleCount: len(pagesThatAreArticles),
-			LocalPage:    page,
+			LocalPage:    bndl,
 		}); err != nil {
 		panic(err)
 	}
 
-	return renderedPage{
+	return renderedBundle{
+		bundle:      bndl,
 		FolderName:  conf.resultFolderName,
 		HtmlContent: htmlString.String(),
 		FileName:    conf.ResultFileName,
@@ -148,11 +168,12 @@ type templateDataContext struct {
 	LocalPage bundle
 }
 
-type renderedPage struct {
+type renderedBundle struct {
 	FolderName  string
 	FileName    string
 	HtmlContent string
 	assets      []asset
+	bundle      bundle
 }
 
 type asset struct {
@@ -191,4 +212,18 @@ func ISODateToRSSDateTime(isoDate string) string {
 
 func GetNowAsRSSDateTime() string {
 	return time.Now().Format(time.RFC1123Z)
+}
+
+func (b renderedBundle) String() string {
+	buffer := new(bytes.Buffer)
+	const format = "%v\t%v\t\n"
+	tw := (&tabwriter.Writer{}).Init(buffer, 0, 12, 2, ' ', 0)
+	fmt.Fprintf(tw, format, "Bundle", b.bundle.name)
+	fmt.Fprintf(tw, format, "  - title", b.bundle.ArticleData.Title)
+	fmt.Fprintf(tw, format, "  - desc", b.bundle.ArticleData.Description)
+	fmt.Fprintf(tw, format, "  - pubdate", b.bundle.ArticleData.PublishedDate)
+	fmt.Fprintf(tw, format, "  - draft", b.bundle.isToBeRendered())
+	fmt.Fprintf(tw, format, "  - size (bytes)", len(b.bundle.TemplatingConf.extraContent))
+	tw.Flush() // this renders the table
+	return buffer.String()
 }
