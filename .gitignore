@@ -95,8 +95,11 @@ fabric.properties
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
+gorki_arm
 gorki_amd64
 
 target
 
 .code-workspace
+
+*.swp
