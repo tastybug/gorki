@@ -18,10 +18,18 @@ to quickly check how the site looks like.
 ### Testing the Dockerized Gorki
 To test from within the container, run
 ```shell script
-docker run --name gorki --rm -ti -v $PWD/site:/app/site "tastybug/gorki" /bin/ash
+docker run --name gorki --rm -ti -v $PWD/site:/app/site "tastybug/gorki:latest-multi" /bin/ash
 ```
 
 ### Run Dockerized Gorki
 ```shell script
-docker run --name gorki --rm -v $PWD/site:/app/site "tastybug/gorki"
+docker run --name gorki --rm -v $PWD/site:/app/site "tastybug/gorki:latest-multi"
+```
+
+### Build and Publish
+
+```
+# this step only on the very first run
+docker run --privileged --rm tonistiigi/binfmt --install all
+docker buildx build --platform=linux/amd64,linux/arm/v7 -t tastybug/gorki:latest-multi --push .
 ```
