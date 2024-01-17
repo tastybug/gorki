@@ -2,8 +2,9 @@
 + Dockerize gorki
 + Local web server for development
 + Makefile to make things easier
-- CI
+- CI (article: https://www.docker.com/blog/multi-arch-build-and-images-the-simple-way/)
 - Document expected structure of a site, format of posts
+- use yaml for articles
 + Generate a "Blog Post as HTML"
 + Generate a "Blog Posts Overview Page"
 - Generate a "Blog Posts Archive Page" or some other form of pagination
