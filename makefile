@@ -1,32 +1,13 @@
-arch?=arm
-os?=linux
-
-GOCMD=go
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
-GOINSTALL=$(GOCMD) install
-GOTEST=$(GOCMD) test
-BASE_BINARY_NAME=gorki
-BINARY_UNIX=$(BASE_BINARY_NAME)_$(arch)
-arch?='arm'
-
 # using maven lifecycle terminology here
 .PHONY: package clean install deploy __clean __test __build_binary __build_image __push_image 
 
-package: clean __test __build_binary
-test: clean __test
-clean: __clean
-install: package __build_image
-deploy: install __push_image
+test: __test
+install: __build_image
+deploy: __push_image
 
-__clean:
-	$(GOCLEAN)
-	rm -f cmd/gorki/$(BINARY_UNIX)
 __test:
-	$(GOTEST) -v ./...
-__build_binary:
-	cd cmd/gorki && env GOOS=$(os) GOARCH=$(arch) $(GOBUILD) -o $(BINARY_UNIX) -v && $(GOINSTALL)
+	docker run --rm -v .:/root -w /root golang:1.21 /usr/local/go/bin/go test -v ./...	
 __build_image:
-	docker build --build-arg gorki_arch=$(arch) -t "tastybug/gorki" .
+	docker buildx build --platform=linux/amd64,linux/arm/v7 -t tastybug/gorki:latest-multi .
 __push_image:
-	docker push "tastybug/gorki"
+	docker buildx build --platform=linux/amd64,linux/arm/v7 -t tastybug/gorki:latest-multi --push .
